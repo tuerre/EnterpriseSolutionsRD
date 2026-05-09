@@ -20,7 +20,7 @@ function getTokenFromRequest(req) {
 	return token || null;
 }
 
-function authenticateToken(req, res, next) {
+async function authenticateToken(req, res, next) {
 	const token = getTokenFromRequest(req);
 
 	if (!token) {
@@ -39,7 +39,17 @@ function authenticateToken(req, res, next) {
 
 	try {
 		const payload = jwt.verify(token, secret);
+		const user = await prisma.users.findUnique({
+			where: { user_id: payload.user_id },
+			select: { user_id: true, is_active: true, username: true },
+		});
+
+		if (!user || user.is_active === false) {
+			return res.status(401).json({ error: "User account is disabled" });
+		}
+
 		req.user = payload;
+		req.currentUser = user;
 		req.token = token;
 		return next();
 	} catch (error) {

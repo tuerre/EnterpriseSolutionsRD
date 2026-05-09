@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 // Importar rutas
 const registerUsers = require('./routes/users/register.users.js');
 const authUsers = require('./routes/users/auth.users.js');
+const disableUsers = require('./routes/users/disable.users.js');
 
 const app = express();
 const httpServer = createServer(app);
@@ -35,6 +36,7 @@ const io = new Server(httpServer, {
 // Rutas
 app.use('/api/users', registerUsers);
 app.use('/api/users', authUsers);
+app.use('/api/users', disableUsers);
 
 // Error global
 app.use((err, req, res, next) => {
