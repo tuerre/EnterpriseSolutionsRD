@@ -4,12 +4,18 @@ const express = require('express');
 const { createServer } = require('http');
 const { Server } = require('socket.io');
 const os = require('os');
+const cookieParser = require('cookie-parser');
+
+// Importar rutas
+const registerUsers = require('./routes/users/register.users');
+const authUsers = require('./routes/users/auth.users');
 
 const app = express();
 const httpServer = createServer(app);
 
 // Middlewares
 app.use(express.json());
+app.use(cookieParser());
 
 // CORS
 const cors = require('cors');
@@ -27,7 +33,8 @@ const io = new Server(httpServer, {
 });
 
 // Rutas
-// app.use('/api/auth', require('./routes/auth'));
+app.use('/api/users', registerUsers);
+app.use('/api/users', authUsers);
 
 // Error global
 app.use((err, req, res, next) => {
