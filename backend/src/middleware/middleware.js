@@ -1,8 +1,7 @@
 const jwt = require("jsonwebtoken");
-const { PrismaClient } = require("../generated/prisma/client");
+const prisma = require("../prisma");
 
 const tokenBlacklist = new Set();
-const prisma = new PrismaClient();
 
 function getTokenFromRequest(req) {
 	const cookieToken = req.cookies ? req.cookies.auth_token : null;

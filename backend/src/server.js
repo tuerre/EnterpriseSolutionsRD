@@ -7,8 +7,8 @@ const os = require('os');
 const cookieParser = require('cookie-parser');
 
 // Importar rutas
-const registerUsers = require('./routes/users/register.users');
-const authUsers = require('./routes/users/auth.users');
+const registerUsers = require('./routes/users/register.users.js');
+const authUsers = require('./routes/users/auth.users.js');
 
 const app = express();
 const httpServer = createServer(app);

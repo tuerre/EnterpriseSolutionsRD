@@ -1,10 +1,9 @@
 const { Router } = require("express");
 const { hash } = require("argon2");
-const { PrismaClient } = require("../../generated/prisma/client");
+const prisma = require("../../prisma");
 const { authenticateToken, requireModulePermission,} = require("../../middleware/middleware");
 
 const router = Router();
-const prisma = new PrismaClient();
 
 router.post("/register",authenticateToken, requireModulePermission("users", "can_insert"),
     async (req, res) => {

@@ -1,14 +1,10 @@
 const { Router } = require("express");
 const { verify } = require("argon2");
 const jwt = require("jsonwebtoken");
-const { PrismaClient } = require("../../generated/prisma/client");
+const prisma = require("../../prisma");
 const { authenticateToken, revokeToken } = require("../../middleware/middleware");
 
-// Router for authentication (login/logout)
-// - Login issues an httpOnly cookie containing a JWT
-// - Logout revokes the token (in-memory) and clears the cookie
 const router = Router();
-const prisma = new PrismaClient();
 
 router.post("/login", async (req, res) => {
 	// Login handler: validate input, verify password, issue JWT cookie
