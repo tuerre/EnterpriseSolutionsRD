@@ -10,6 +10,19 @@ const cookieParser = require('cookie-parser');
 const registerUsers = require('./routes/users/register.users.js');
 const authUsers = require('./routes/users/auth.users.js');
 const disableUsers = require('./routes/users/disable.users.js');
+const listCategories = require('./routes/categories/list.categories.js');
+const addCategory = require('./routes/categories/add.categorie.js');
+const editCategory = require('./routes/categories/edit.categorie.js');
+const deleteCategory = require('./routes/categories/delete.categorie.js');
+const listProducts = require('./routes/products/list.products.js');
+const addProducts = require('./routes/products/add.products.js');
+const editProducts = require('./routes/products/edit.products.js');
+const deleteProducts = require('./routes/products/delete.products.js');
+const listProviders = require('./routes/suppliers/list.suppliers.js');
+const addProvider = require('./routes/suppliers/add.suppliers.js');
+const editProvider = require('./routes/suppliers/edit.supplier.js');
+const deleteProvider = require('./routes/suppliers/delete.supplier.js');
+const { authenticateToken } = require('./middleware/middleware.js');
 
 const app = express();
 const httpServer = createServer(app);
@@ -37,6 +50,18 @@ const io = new Server(httpServer, {
 app.use('/api/users', registerUsers);
 app.use('/api/users', authUsers);
 app.use('/api/users', disableUsers);
+app.use('/api/categories', authenticateToken, listCategories);
+app.use('/api/categories', authenticateToken, addCategory);
+app.use('/api/categories', authenticateToken, editCategory);
+app.use('/api/categories', authenticateToken, deleteCategory);
+app.use('/api/products', authenticateToken, listProducts);
+app.use('/api/products', authenticateToken, addProducts);
+app.use('/api/products', authenticateToken, editProducts);
+app.use('/api/products', authenticateToken, deleteProducts);
+app.use('/api/providers', authenticateToken, listProviders);
+app.use('/api/providers', authenticateToken, addProvider);
+app.use('/api/providers', authenticateToken, editProvider);
+app.use('/api/providers', authenticateToken, deleteProvider);
 
 // Error global
 app.use((err, req, res, next) => {
