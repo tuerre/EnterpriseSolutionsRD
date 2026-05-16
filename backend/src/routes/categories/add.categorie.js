@@ -1,5 +1,6 @@
 const express = require('express');
 const prisma = require('../../prisma');
+const { requireModulePermission } = require('../../middleware/middleware');
 
 const router = express.Router();
 
@@ -73,6 +74,6 @@ const addCategory = async (req, res) => {
 };
 
 // ============ ROUTES ============
-router.post('/', addCategory);
+router.post('/', requireModulePermission('categories', 'can_insert'), addCategory);
 
 module.exports = router;

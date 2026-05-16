@@ -1,5 +1,6 @@
 const express = require('express');
 const prisma = require('../../prisma');
+const { requireModulePermission } = require('../../middleware/middleware');
 
 const router = express.Router();
 
@@ -108,6 +109,6 @@ const editCategory = async (req, res) => {
 };
 
 // ============ ROUTES ============
-router.put('/:category_id', editCategory);
+router.put('/:category_id', requireModulePermission('categories', 'can_update'), editCategory);
 
 module.exports = router;

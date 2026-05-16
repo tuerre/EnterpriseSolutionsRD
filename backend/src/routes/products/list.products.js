@@ -1,5 +1,6 @@
 const express = require('express');
 const prisma = require('../../prisma');
+const { requireModulePermission } = require('../../middleware/middleware');
 
 const router = express.Router();
 
@@ -222,7 +223,7 @@ const obtenerProducto = async (req, res) => {
 };
 
 // ============ ROUTES ============
-router.get('/', listarProductos);
-router.get('/:product_id', obtenerProducto);
+router.get('/', requireModulePermission('products', 'can_read'), listarProductos);
+router.get('/:product_id', requireModulePermission('products', 'can_read'), obtenerProducto);
 
 module.exports = router;

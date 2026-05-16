@@ -1,5 +1,6 @@
 const express = require('express');
 const prisma = require('../../prisma');
+const { requireModulePermission } = require('../../middleware/middleware');
 
 const router = express.Router();
 
@@ -172,7 +173,7 @@ const getCategory = async (req, res) => {
 };
 
 // ============ ROUTES ============
-router.get('/', listCategories);
-router.get('/:category_id', getCategory);
+router.get('/', requireModulePermission('categories', 'can_read'), listCategories);
+router.get('/:category_id', requireModulePermission('categories', 'can_read'), getCategory);
 
 module.exports = router;

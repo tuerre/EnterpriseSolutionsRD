@@ -1,5 +1,6 @@
 const express = require('express');
 const prisma = require('../../prisma');
+const { requireModulePermission } = require('../../middleware/middleware');
 
 const router = express.Router();
 
@@ -188,6 +189,6 @@ const editSupplier = async (req, res) => {
 };
 
 // ============ ROUTES ============
-router.put('/:supplier_id', editSupplier);
+router.put('/:supplier_id', requireModulePermission('suppliers', 'can_update'), editSupplier);
 
 module.exports = router;
