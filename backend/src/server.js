@@ -22,6 +22,10 @@ const listProviders = require('./routes/suppliers/list.suppliers.js');
 const addProvider = require('./routes/suppliers/add.suppliers.js');
 const editProvider = require('./routes/suppliers/edit.supplier.js');
 const deleteProvider = require('./routes/suppliers/delete.supplier.js');
+const listCustomers = require('./routes/customers/list.customers.js');
+const addCustomer = require('./routes/customers/add.customer.js');
+const editCustomer = require('./routes/customers/edit.customer.js');
+const deleteCustomer = require('./routes/customers/delete.customer.js');
 const { authenticateToken } = require('./middleware/middleware.js');
 
 const app = express();
@@ -62,6 +66,10 @@ app.use('/api/providers', authenticateToken, listProviders);
 app.use('/api/providers', authenticateToken, addProvider);
 app.use('/api/providers', authenticateToken, editProvider);
 app.use('/api/providers', authenticateToken, deleteProvider);
+app.use('/api/customers', authenticateToken, listCustomers);
+app.use('/api/customers', authenticateToken, addCustomer);
+app.use('/api/customers', authenticateToken, editCustomer);
+app.use('/api/customers', authenticateToken, deleteCustomer);
 
 // Error global
 app.use((err, req, res, next) => {
