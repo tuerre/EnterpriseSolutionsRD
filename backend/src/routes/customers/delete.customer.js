@@ -1,5 +1,6 @@
 const express = require('express');
 const prisma = require('../../prisma');
+const { requireModulePermission } = require('../../middleware/middleware');
 
 const router = express.Router();
 
@@ -78,6 +79,6 @@ const deleteCustomer = async (req, res) => {
 };
 
 // ============ ROUTES ============
-router.delete('/:customer_id', deleteCustomer);
+router.delete('/:customer_id', requireModulePermission('customers', 'can_delete'), deleteCustomer);
 
 module.exports = router;
