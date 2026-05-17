@@ -9,6 +9,7 @@ datasource db {
 model categories {
   category_id   Int        @id @default(autoincrement())
   category_name String     @unique @db.VarChar(100)
+  is_active     Boolean?   @default(true)
   products      products[]
 }
 

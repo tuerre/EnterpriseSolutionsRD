@@ -4,7 +4,7 @@ const { requireModulePermission } = require('../../middleware/middleware');
 
 const router = express.Router();
 
-// ============ DELETE A CATEGORY ============
+// ============ DELETE A CATEGORY (SOFT DELETE) ============
 const deleteCategory = async (req, res) => {
 	try {
 		const { category_id } = req.params;
@@ -47,11 +47,7 @@ const deleteCategory = async (req, res) => {
 			select: {
 				category_id: true,
 				category_name: true,
-				_count: {
-					select: {
-						products: true
-					}
-				}
+				is_active: true
 			}
 		});
 
@@ -61,20 +57,25 @@ const deleteCategory = async (req, res) => {
 			});
 		}
 
-		if (categoryExisting._count.products > 0) {
+		if (categoryExisting.is_active === false) {
 			return res.status(400).json({
-				error: 'Cannot delete a category with associated products'
+				error: 'Category is already inactive'
 			});
 		}
 
-		// ============ DELETE CATEGORY ============
-		const categoryDeleted = await prisma.categories.delete({
-			where: { category_id: Number(category_id) }
+		// ============ DELETE CATEGORY (SOFT DELETE) ============
+		const categoryDeleted = await prisma.categories.update({
+			where: { category_id: Number(category_id) },
+			data: { is_active: false }
 		});
 
 		return res.status(200).json({
 			message: 'Category deleted successfully',
-			category: categoryDeleted
+			category: {
+				category_id: categoryDeleted.category_id,
+				category_name: categoryDeleted.category_name,
+				is_active: categoryDeleted.is_active
+			}
 		});
 	} catch (error) {
 		console.error('Error deleting category:', error);

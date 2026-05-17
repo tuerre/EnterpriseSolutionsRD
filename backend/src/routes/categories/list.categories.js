@@ -34,7 +34,7 @@ const listCategories = async (req, res) => {
 		}
 
 		// ============ SEARCH AND PAGINATION PARAMETERS ============
-		const { search, page = 1, limit = 10, sortBy = 'category_name', sortOrder = 'asc' } = req.query;
+		const { search, is_active, page = 1, limit = 10, sortBy = 'category_name', sortOrder = 'asc' } = req.query;
 
 		// Validate pagination
 		const pageNum = Math.max(1, parseInt(page) || 1);
@@ -47,13 +47,19 @@ const listCategories = async (req, res) => {
 		const sortOrderFinal = sortOrder.toLowerCase() === 'desc' ? 'desc' : 'asc';
 
 		// ============ BUILD FILTERS ============
-		const where = {};
+		const where = { is_active: true };
 
 		if (search && typeof search === 'string' && search.trim()) {
 			where.category_name = {
 				contains: search.trim(),
 				mode: 'insensitive'
 			};
+		}
+
+		// Status filter (active/inactive)
+		if (is_active !== undefined) {
+			const isActiveBool = is_active === 'true' || is_active === '1' || is_active === true;
+			where.is_active = isActiveBool;
 		}
 
 		// ============ GET TOTAL AND CATEGORIES ============
