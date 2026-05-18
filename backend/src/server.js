@@ -7,6 +7,7 @@ const os = require('os');
 const cookieParser = require('cookie-parser');
 
 // Importar rutas
+const updateStockRoute = require('./routes/products/update.stock');
 const registerUsers = require('./routes/users/register.users.js');
 const authUsers = require('./routes/users/auth.users.js');
 const disableUsers = require('./routes/users/disable.users.js');
@@ -27,6 +28,8 @@ const addCustomer = require('./routes/customers/add.customer.js');
 const editCustomer = require('./routes/customers/edit.customer.js');
 const deleteCustomer = require('./routes/customers/delete.customer.js');
 const { authenticateToken } = require('./middleware/middleware.js');
+const lowStockRoute = require('./routes/products/low.stock.products');
+const inventoryHistoryRoute = require('./routes/products/inventory.history');
 
 const app = express();
 const httpServer = createServer(app);
@@ -70,6 +73,9 @@ app.use('/api/customers', authenticateToken, listCustomers);
 app.use('/api/customers', authenticateToken, addCustomer);
 app.use('/api/customers', authenticateToken, editCustomer);
 app.use('/api/customers', authenticateToken, deleteCustomer);
+app.use('/products/stock', updateStockRoute);
+app.use('/products/low-stock', lowStockRoute);
+app.use('/products/history', inventoryHistoryRoute);
 
 // Error global
 app.use((err, req, res, next) => {
