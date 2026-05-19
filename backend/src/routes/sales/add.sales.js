@@ -7,7 +7,7 @@ const router = express.Router();
 const registrarVenta = async (req, res) => {
     const { payment_method, items } = req.body;
     
-    const user_id = req.user ? req.user.id : (req.number ? req.number.user_id : null);
+    const user_id = req.user?.user_id;
 
     if (!user_id) {
         return res.status(401).json({ error: "No se pudo identificar al usuario que procesa la venta." });

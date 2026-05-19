@@ -26,6 +26,10 @@ const listCustomers = require('./routes/customers/list.customers.js');
 const addCustomer = require('./routes/customers/add.customer.js');
 const editCustomer = require('./routes/customers/edit.customer.js');
 const deleteCustomer = require('./routes/customers/delete.customer.js');
+const addPurchase = require('./routes/purchases/add.purchase.js');
+const listPurchases = require('./routes/purchases/list.purchases.js');
+const addSales = require('./routes/sales/add.sales.js');
+const listSales = require('./routes/sales/list.sales.js');
 const { authenticateToken } = require('./middleware/middleware.js');
 
 const app = express();
@@ -51,25 +55,36 @@ const io = new Server(httpServer, {
 });
 
 // Rutas
+// User routes
 app.use('/api/users', registerUsers);
 app.use('/api/users', authUsers);
 app.use('/api/users', disableUsers);
+// Category routes
 app.use('/api/categories', authenticateToken, listCategories);
 app.use('/api/categories', authenticateToken, addCategory);
 app.use('/api/categories', authenticateToken, editCategory);
 app.use('/api/categories', authenticateToken, deleteCategory);
+// Product routes
 app.use('/api/products', authenticateToken, listProducts);
 app.use('/api/products', authenticateToken, addProducts);
 app.use('/api/products', authenticateToken, editProducts);
 app.use('/api/products', authenticateToken, deleteProducts);
-app.use('/api/providers', authenticateToken, listProviders);
-app.use('/api/providers', authenticateToken, addProvider);
-app.use('/api/providers', authenticateToken, editProvider);
-app.use('/api/providers', authenticateToken, deleteProvider);
+// Supplier routes
+app.use('/api/suppliers', authenticateToken, listProviders);
+app.use('/api/suppliers', authenticateToken, addProvider);
+app.use('/api/suppliers', authenticateToken, editProvider);
+app.use('/api/suppliers', authenticateToken, deleteProvider);
+// Customer routes
 app.use('/api/customers', authenticateToken, listCustomers);
 app.use('/api/customers', authenticateToken, addCustomer);
 app.use('/api/customers', authenticateToken, editCustomer);
 app.use('/api/customers', authenticateToken, deleteCustomer);
+// Purchase routes
+app.use('/api/purchases', authenticateToken, addPurchase);
+app.use('/api/purchases', authenticateToken, listPurchases);
+// Sales routes
+app.use('/api/sales', authenticateToken, addSales);
+app.use('/api/sales', authenticateToken, listSales);
 
 // Error global
 app.use((err, req, res, next) => {
