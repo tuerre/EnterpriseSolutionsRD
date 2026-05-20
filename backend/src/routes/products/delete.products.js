@@ -86,6 +86,6 @@ const eliminarProducto = async (req, res) => {
 };
 
 // ============ ROUTES ============
-router.delete('/:product_id', requireModulePermission('products', 'can_delete'), eliminarProducto);
+router.put('/:product_id', requireModulePermission('products', 'can_delete'), eliminarProducto);
 
 module.exports = router;

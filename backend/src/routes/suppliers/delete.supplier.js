@@ -86,6 +86,6 @@ const deleteSupplier = async (req, res) => {
 };
 
 // ============ ROUTES ============
-router.delete('/:supplier_id', requireModulePermission('suppliers', 'can_delete'), deleteSupplier);
+router.put('/:supplier_id', requireModulePermission('suppliers', 'can_delete'), deleteSupplier);
 
 module.exports = router;

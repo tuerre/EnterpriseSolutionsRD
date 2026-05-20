@@ -60,9 +60,9 @@ const agregarProducto = async (req, res) => {
 			return res.status(400).json({ error: 'Product name cannot exceed 150 characters' });
 		}
 
-		// Validate description (optional, but if provided, validate)
-		if (description && typeof description !== 'string') {
-			return res.status(400).json({ error: 'Description must be valid text' });
+		// Validate description (required)
+		if (!description || typeof description !== 'string' || description.trim() === '') {
+			return res.status(400).json({ error: 'Description is required' });
 		}
 
 		// Validate category
@@ -109,9 +109,9 @@ const agregarProducto = async (req, res) => {
 			stockFinal = stockNum;
 		}
 
-		// Validate aisle location (optional)
-		if (aisle_location && typeof aisle_location !== 'string') {
-		return res.status(400).json({ error: 'Aisle location must be valid text' });
+		// Validate aisle location (required)
+		if (!aisle_location || typeof aisle_location !== 'string' || aisle_location.trim() === '') {
+			return res.status(400).json({ error: 'Aisle location is required' });
 		}
 
 		// ============ DATA INTEGRITY VERIFICATION ============

@@ -86,6 +86,6 @@ const deleteCategory = async (req, res) => {
 };
 
 // ============ ROUTES ============
-router.delete('/:category_id', requireModulePermission('categories', 'can_delete'), deleteCategory);
+router.put('/:category_id', requireModulePermission('categories', 'can_delete'), deleteCategory);
 
 module.exports = router;
