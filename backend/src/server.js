@@ -23,10 +23,6 @@ const listProviders = require('./routes/suppliers/list.suppliers.js');
 const addProvider = require('./routes/suppliers/add.suppliers.js');
 const editProvider = require('./routes/suppliers/edit.supplier.js');
 const deleteProvider = require('./routes/suppliers/delete.supplier.js');
-const listCustomers = require('./routes/customers/list.customers.js');
-const addCustomer = require('./routes/customers/add.customer.js');
-const editCustomer = require('./routes/customers/edit.customer.js');
-const deleteCustomer = require('./routes/customers/delete.customer.js');
 const addPurchase = require('./routes/purchases/add.purchase.js');
 const listPurchases = require('./routes/purchases/list.purchases.js');
 const addSales = require('./routes/sales/add.sales.js');
@@ -99,11 +95,6 @@ app.use('/api/suppliers', authenticateToken, listProviders);
 app.use('/api/suppliers', authenticateToken, addProvider);
 app.use('/api/suppliers', authenticateToken, editProvider);
 app.use('/api/suppliers', authenticateToken, deleteProvider);
-// Customer routes
-app.use('/api/customers', authenticateToken, listCustomers);
-app.use('/api/customers', authenticateToken, addCustomer);
-app.use('/api/customers', authenticateToken, editCustomer);
-app.use('/api/customers', authenticateToken, deleteCustomer);
 // Purchase routes
 app.use('/api/purchases', authenticateToken, addPurchase);
 app.use('/api/purchases', authenticateToken, listPurchases);
