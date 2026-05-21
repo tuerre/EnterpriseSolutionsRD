@@ -39,6 +39,11 @@ const addEmployee = require('./routes/employees/add.employee.js');
 const editEmployee = require('./routes/employees/edit.employee.js');
 const deleteEmployee = require('./routes/employees/delete.employee.js');
 const reactivateEmployee = require('./routes/employees/reactivate.employee.js');
+const listDepartments = require('./routes/departments/list.departments.js');
+const addDepartment = require('./routes/departments/add.department.js');
+const editDepartment = require('./routes/departments/edit.department.js');
+const deleteDepartment = require('./routes/departments/delete.department.js');
+const reactivateDepartment = require('./routes/departments/reactivate.department.js');
 
 const app = express();
 const httpServer = createServer(app);
@@ -73,6 +78,12 @@ app.use('/api/employees', authenticateToken, addEmployee);
 app.use('/api/employees', authenticateToken, editEmployee);
 app.use('/api/employees/delete', authenticateToken, deleteEmployee);
 app.use('/api/employees/reactivate', authenticateToken, reactivateEmployee);
+// Departments routes
+app.use('/api/departments', authenticateToken, listDepartments);
+app.use('/api/departments', authenticateToken, addDepartment);
+app.use('/api/departments', authenticateToken, editDepartment);
+app.use('/api/departments/delete', authenticateToken, deleteDepartment);
+app.use('/api/departments/reactivate', authenticateToken, reactivateDepartment);
 // Category routes
 app.use('/api/categories', authenticateToken, listCategories);
 app.use('/api/categories', authenticateToken, addCategory);
