@@ -34,6 +34,11 @@ const listSales = require('./routes/sales/list.sales.js');
 const { authenticateToken } = require('./middleware/middleware.js');
 const lowStockRoute = require('./routes/products/low.stock.products');
 const inventoryHistoryRoute = require('./routes/products/inventory.history');
+const listEmployees = require('./routes/employees/list.employees.js');
+const addEmployee = require('./routes/employees/add.employee.js');
+const editEmployee = require('./routes/employees/edit.employee.js');
+const deleteEmployee = require('./routes/employees/delete.employee.js');
+const reactivateEmployee = require('./routes/employees/reactivate.employee.js');
 
 const app = express();
 const httpServer = createServer(app);
@@ -62,6 +67,12 @@ const io = new Server(httpServer, {
 app.use('/api/users', registerUsers);
 app.use('/api/users', authUsers);
 app.use('/api/users', disableUsers);
+// Employees routes
+app.use('/api/employees', authenticateToken, listEmployees);
+app.use('/api/employees', authenticateToken, addEmployee);
+app.use('/api/employees', authenticateToken, editEmployee);
+app.use('/api/employees/delete', authenticateToken, deleteEmployee);
+app.use('/api/employees/reactivate', authenticateToken, reactivateEmployee);
 // Category routes
 app.use('/api/categories', authenticateToken, listCategories);
 app.use('/api/categories', authenticateToken, addCategory);
