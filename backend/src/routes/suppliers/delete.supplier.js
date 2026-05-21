@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -67,6 +68,14 @@ const deleteSupplier = async (req, res) => {
 		const supplierDeleted = await prisma.suppliers.update({
 			where: { supplier_id: Number(supplier_id) },
 			data: { is_active: false }
+		});
+
+		await createSystemMovement({
+			module_name: 'suppliers',
+			user_id,
+			reference_id: Number(supplier_id),
+			actionType: 'ELIMINAR_PROVEEDOR',
+			description: `Desactivó el proveedor ${supplierDeleted.company_name}`
 		});
 
 		return res.status(200).json({

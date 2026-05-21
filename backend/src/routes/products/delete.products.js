@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -67,6 +68,14 @@ const eliminarProducto = async (req, res) => {
 		const productoEliminado = await prisma.products.update({
 			where: { product_id: Number(product_id) },
 			data: { is_active: false }
+		});
+
+		await createSystemMovement({
+			module_name: 'products',
+			user_id,
+			reference_id: Number(product_id),
+			actionType: 'ELIMINAR_PRODUCTO',
+			description: `Desactivó el producto ${productoEliminado.product_name}`
 		});
 
 		return res.status(200).json({

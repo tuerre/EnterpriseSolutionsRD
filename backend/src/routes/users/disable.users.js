@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const prisma = require("../../prisma");
 const { authenticateToken, requireModulePermission } = require("../../middleware/middleware");
+const { createSystemMovement } = require("../../helpers/system-movements");
 
 const router = Router();
 
@@ -26,6 +27,14 @@ router.put("/:user_id/disable", authenticateToken, requireModulePermission("user
 		}
 
 		if (user.is_active === false) {
+			await createSystemMovement({
+				module_name: 'users',
+				user_id: Number(req.user?.user_id),
+				reference_id: userId,
+				actionType: 'DESACTIVAR_USUARIO',
+				description: `Intentó desactivar el usuario ${user.username} que ya estaba desactivado`
+			});
+
 			return res.status(200).json({ message: "User is already disabled", user });
 		}
 
@@ -33,6 +42,14 @@ router.put("/:user_id/disable", authenticateToken, requireModulePermission("user
 			where: { user_id: userId },
 			data: { is_active: false },
 			select: { user_id: true, username: true, is_active: true },
+		});
+
+		await createSystemMovement({
+			module_name: 'users',
+			user_id: Number(req.user?.user_id),
+			reference_id: userId,
+			actionType: 'DESACTIVAR_USUARIO',
+			description: `Desactivó el usuario ${updatedUser.username}`
 		});
 
 		console.log(`User disabled: ${updatedUser.username}`);
@@ -62,6 +79,14 @@ router.put("/:user_id/enable", authenticateToken, requireModulePermission("users
 		}
 
 		if (user.is_active === true) {
+			await createSystemMovement({
+				module_name: 'users',
+				user_id: Number(req.user?.user_id),
+				reference_id: userId,
+				actionType: 'ACTIVAR_USUARIO',
+				description: `Intentó activar el usuario ${user.username} que ya estaba activo`
+			});
+
 			return res.status(200).json({ message: "User is already enabled", user });
 		}
 
@@ -69,6 +94,14 @@ router.put("/:user_id/enable", authenticateToken, requireModulePermission("users
 			where: { user_id: userId },
 			data: { is_active: true },
 			select: { user_id: true, username: true, is_active: true },
+		});
+
+		await createSystemMovement({
+			module_name: 'users',
+			user_id: Number(req.user?.user_id),
+			reference_id: userId,
+			actionType: 'ACTIVAR_USUARIO',
+			description: `Activó el usuario ${updatedUser.username}`
 		});
 
 		console.log(`User enabled: ${updatedUser.username}`);

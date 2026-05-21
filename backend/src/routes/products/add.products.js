@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -200,6 +201,15 @@ const agregarProducto = async (req, res) => {
 					}
 				}
 			});
+		});
+
+		await createSystemMovement({
+			module_name: 'products',
+			user_id,
+			reference_id: productoCreado.product_id,
+			amount: stockFinal,
+			actionType: 'CREAR_PRODUCTO',
+			description: `Creó el producto ${productoCreado.product_name}`
 		});
 
 		return res.status(201).json({

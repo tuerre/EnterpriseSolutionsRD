@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -174,6 +175,14 @@ const editSupplier = async (req, res) => {
 		const supplierUpdated = await prisma.suppliers.update({
 			where: { supplier_id: Number(supplier_id) },
 			data: dataUpdate
+		});
+
+		await createSystemMovement({
+			module_name: 'suppliers',
+			user_id,
+			reference_id: Number(supplier_id),
+			actionType: 'ACTUALIZAR_PROVEEDOR',
+			description: `Actualizó el proveedor ${supplierUpdated.company_name}. Campos: ${Object.keys(dataUpdate).join(', ')}`
 		});
 
 		return res.status(200).json({

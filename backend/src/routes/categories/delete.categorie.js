@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -67,6 +68,14 @@ const deleteCategory = async (req, res) => {
 		const categoryDeleted = await prisma.categories.update({
 			where: { category_id: Number(category_id) },
 			data: { is_active: false }
+		});
+
+		await createSystemMovement({
+			module_name: 'categories',
+			user_id,
+			reference_id: Number(category_id),
+			actionType: 'ELIMINAR_CATEGORIA',
+			description: `Desactivó la categoría ${categoryDeleted.category_name}`
 		});
 
 		return res.status(200).json({

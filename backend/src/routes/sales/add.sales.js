@@ -1,15 +1,16 @@
 const express = require('express');
 const prisma = require('../../prisma'); 
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
 const registrarVenta = async (req, res) => {
     const { payment_method, items } = req.body;
     
-    const user_id = req.user?.user_id;
+    const user_id = Number(req.user?.user_id);
 
-    if (!user_id) {
+    if (!Number.isInteger(user_id) || user_id <= 0) {
         return res.status(401).json({ error: "No se pudo identificar al usuario que procesa la venta." });
     }
 
@@ -96,6 +97,15 @@ const registrarVenta = async (req, res) => {
                     }
                 });
             }
+
+			await createSystemMovement(tx, {
+				module_name: 'sales',
+				user_id,
+				reference_id: nuevaVentaMaestro.sale_id,
+				amount: total_final,
+				actionType: 'REGISTRAR_VENTA',
+				description: `Registró la venta ${invoice_number} con ${items.length} ítems`
+			});
 
             return {
                 factura: nuevaVentaMaestro,

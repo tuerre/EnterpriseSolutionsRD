@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -70,9 +71,17 @@ const reactivateCategory = async (req, res) => {
 		});
 
 		// Activate all products associated with this category
-		await prisma.products.updateMany({
+		const productosActivados = await prisma.products.updateMany({
 			where: { category_id: Number(category_id), is_active: false },
 			data: { is_active: true }
+		});
+
+		await createSystemMovement({
+			module_name: 'categories',
+			user_id,
+			reference_id: Number(category_id),
+			actionType: 'REACTIVAR_CATEGORIA',
+			description: `Reactivó la categoría ${categoryReactivated.category_name} y ${productosActivados.count} productos asociados`
 		});
 
 		return res.status(200).json({

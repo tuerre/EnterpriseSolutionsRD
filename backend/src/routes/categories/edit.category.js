@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -94,6 +95,14 @@ const editCategory = async (req, res) => {
 		const categoryUpdated = await prisma.categories.update({
 			where: { category_id: Number(category_id) },
 			data: dataUpdate
+		});
+
+		await createSystemMovement({
+			module_name: 'categories',
+			user_id,
+			reference_id: Number(category_id),
+			actionType: 'ACTUALIZAR_CATEGORIA',
+			description: `Actualizó la categoría ${categoryUpdated.category_name}. Campos: ${Object.keys(dataUpdate).join(', ')}`
 		});
 
 		return res.status(200).json({

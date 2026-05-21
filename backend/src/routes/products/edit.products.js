@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -248,6 +249,15 @@ const editarProducto = async (req, res) => {
 					}
 				}
 			}
+		});
+
+		await createSystemMovement({
+			module_name: 'products',
+			user_id,
+			reference_id: Number(product_id),
+			amount: dataActualizacion.stock !== undefined ? dataActualizacion.stock : null,
+			actionType: 'ACTUALIZAR_PRODUCTO',
+			description: `Actualizó el producto ${productoActualizado.product_name}. Campos: ${Object.keys(dataActualizacion).join(', ')}`
 		});
 
 		return res.status(200).json({

@@ -11,40 +11,51 @@ async function createSystemMovement(dbOrData, maybeData) {
 
     const {
         module_id,
-        module_name,
+            module_name,
+            moduleName,
         user_id,
         reference_id = null,
-        action_type,
+            action_type,
+            actionType,
         amount = null,
-        notes = null
+            notes = null,
+            description = null
     } = data || {};
 
     if (!Number.isInteger(Number(user_id)) || Number(user_id) <= 0) {
         throw new Error('user_id is required to create a system movement');
     }
 
-    if (!action_type) {
+        const finalActionType = action_type || actionType;
+
+        if (!finalActionType) {
         throw new Error('action_type is required to create a system movement');
     }
 
     let resolvedModuleId = Number(module_id);
 
     if (!Number.isInteger(resolvedModuleId) || resolvedModuleId <= 0) {
-        if (!module_name) {
+            const finalModuleName = module_name || moduleName;
+
+            if (!finalModuleName) {
             throw new Error('module_id or module_name is required to create a system movement');
         }
 
         const moduleRecord = await db.modules.findUnique({
-            where: { name: module_name },
+                where: { name: finalModuleName },
             select: { module_id: true }
         });
 
         if (!moduleRecord) {
-            throw new Error(`Module not found: ${module_name}`);
+                throw new Error(`Module not found: ${finalModuleName}`);
         }
 
         resolvedModuleId = moduleRecord.module_id;
     }
+
+        const finalNotes = typeof description === 'string' && description.trim()
+            ? description.trim()
+            : notes;
 
     return db.system_movements.create({
         data: {
@@ -53,11 +64,11 @@ async function createSystemMovement(dbOrData, maybeData) {
             reference_id: reference_id === null || reference_id === undefined || reference_id === ''
                 ? null
                 : Number(reference_id),
-            action_type,
+                action_type: finalActionType,
             amount: amount === null || amount === undefined || amount === ''
                 ? null
                 : amount,
-            notes: typeof notes === 'string' && notes.trim() ? notes.trim() : null
+                notes: typeof finalNotes === 'string' && finalNotes.trim() ? finalNotes.trim() : null
         }
     });
 }

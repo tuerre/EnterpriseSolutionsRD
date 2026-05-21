@@ -1,15 +1,23 @@
 const express = require('express');
 const prisma = require('../../prisma'); 
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
 const registrarCompra = async (req, res) => {
     const { supplier_id, items } = req.body;
+    const user_id = Number(req.user?.user_id);
 
     if (!supplier_id || !items || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ 
             error: "Debe proporcionar un 'supplier_id' válido y un arreglo de 'items' con productos." 
+        });
+    }
+
+    if (!Number.isInteger(user_id) || user_id <= 0) {
+        return res.status(400).json({
+            error: 'Could not determine authenticated user'
         });
     }
 
@@ -76,6 +84,15 @@ const registrarCompra = async (req, res) => {
                     }
                 });
             }
+
+			await createSystemMovement(tx, {
+				module_name: 'purchases',
+				user_id,
+				reference_id: nuevaCompraMaestro.purchase_id,
+				amount: total_amount,
+				actionType: 'REGISTRAR_COMPRA',
+				description: `Registró la compra ${nuevaCompraMaestro.purchase_id} del proveedor ${supplier_id} con ${items.length} ítems`
+			});
 
             return {
                 compra: nuevaCompraMaestro,

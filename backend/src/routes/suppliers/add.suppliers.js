@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -120,6 +121,14 @@ const addSupplier = async (req, res) => {
 				address: address ? address.trim() : null,
 				is_active: true
 			}
+		});
+
+		await createSystemMovement({
+			module_name: 'suppliers',
+			user_id,
+			reference_id: supplierCreated.supplier_id,
+			actionType: 'CREAR_PROVEEDOR',
+			description: `Creó el proveedor ${supplierCreated.company_name}`
 		});
 
 		return res.status(201).json({

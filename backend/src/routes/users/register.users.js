@@ -2,6 +2,7 @@ const { Router } = require("express");
 const { hash } = require("argon2");
 const prisma = require("../../prisma");
 const { authenticateToken, requireModulePermission } = require("../../middleware/middleware");
+const { createSystemMovement } = require("../../helpers/system-movements");
 
 const router = Router();
 
@@ -100,6 +101,14 @@ router.post("/register", authenticateToken, requireModulePermission("users", "ca
             });
 
             console.log("Register successful");
+
+            await createSystemMovement({
+                module_name: 'users',
+                user_id: Number(req.user?.user_id),
+                reference_id: createdData.newUser.user_id,
+                actionType: 'CREAR_USUARIO',
+                description: `Creó el usuario ${createdData.newUser.username} con el rol ${createdData.createdRole.role_name}`
+            });
 
             res.status(201).json({
                 message: "User created successfully",

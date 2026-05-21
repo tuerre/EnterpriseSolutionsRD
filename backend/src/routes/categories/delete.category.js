@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -70,9 +71,17 @@ const deleteCategory = async (req, res) => {
 		});
 
 		// Deactivate all products associated with this category
-		await prisma.products.updateMany({
+		const productosDesactivados = await prisma.products.updateMany({
 			where: { category_id: Number(category_id), is_active: true },
 			data: { is_active: false }
+		});
+
+		await createSystemMovement({
+			module_name: 'categories',
+			user_id,
+			reference_id: Number(category_id),
+			actionType: 'ELIMINAR_CATEGORIA',
+			description: `Desactivó la categoría ${categoryDeleted.category_name} y ${productosDesactivados.count} productos asociados`
 		});
 
 		return res.status(200).json({
