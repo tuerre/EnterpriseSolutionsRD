@@ -2,6 +2,7 @@ const express = require('express');
 const prisma = require('../../prisma'); 
 const { requireModulePermission } = require('../../middleware/middleware');
 const { createSystemMovement } = require('../../helpers/system-movements');
+const Decimal = require('decimal.js');
 
 const router = express.Router();
 
@@ -32,67 +33,110 @@ const registrarCompra = async (req, res) => {
                 throw new Error(`El proveedor con ID ${supplier_id} no existe en el sistema.`);
             }
 
-            let total_amount = 0;
-            const productosVerificados = [];
+            if (proveedor.is_active === false) {
+                throw new Error(`El proveedor con ID ${supplier_id} está desactivado y no puede recibir compras.`);
+            }
 
+            // Aggregate duplicate product entries (sum quantities per product_id)
+            // Track optional unit_price overrides per product. If multiple different overrides
+            // are provided for the same product, reject the request.
+            const aggregated = new Map(); // product_id -> { qty, overrides: Set }
             for (const item of items) {
                 if (!item.product_id || !item.quantity || Number(item.quantity) <= 0) {
                     throw new Error("Cada artículo debe contener un 'product_id' y una cantidad mayor a 0.");
                 }
+                const pid = Number(item.product_id);
+                const qty = Number(item.quantity);
+                const override = item.unit_price != null ? Number(item.unit_price) : null;
+                if (override != null && (!isFinite(override) || override < 0)) {
+                    throw new Error(`unit_price inválido para el producto ${pid}`);
+                }
 
+                if (!aggregated.has(pid)) aggregated.set(pid, { qty: 0, overrides: new Set() });
+                const entry = aggregated.get(pid);
+                entry.qty += qty;
+                if (override != null) entry.overrides.add(String(override));
+            }
+
+            let total_amount = new Decimal(0);
+            const detallesParaInsertar = [];
+
+            for (const [productId, aggregateValue] of aggregated.entries()) {
+                const totalQty = aggregateValue.qty;
                 const producto = await tx.products.findUnique({
-                    where: { product_id: Number(item.product_id) }
+                    where: { product_id: Number(productId) }
                 });
 
                 if (!producto) {
-                    throw new Error(`El producto con ID ${item.product_id} no existe en el catálogo.`);
+                    throw new Error(`El producto con ID ${productId} no existe en el catálogo.`);
                 }
 
-                const subtotalItem = Number(item.quantity) * Number(producto.cost_price);
-                total_amount += subtotalItem;
+                if (producto.supplier_id !== Number(supplier_id)) {
+                    throw new Error(`El producto ${producto.product_name} (ID ${productId}) no pertenece al proveedor ${supplier_id}.`);
+                }
 
-                productosVerificados.push({
+                if (producto.is_active === false) {
+                    throw new Error(`El producto ${producto.product_name} (ID ${productId}) está desactivado y no puede comprarse.`);
+                }
+
+                // Resolve unit_price: use override if provided (single value), otherwise product.cost_price
+                const overrides = Array.from(aggregateValue.overrides);
+                if (overrides.length > 1) {
+                    throw new Error(`Múltiples unit_price distintos proporcionados para el producto ${productId}. Unifique el precio o envíe una sola línea por producto.`);
+                }
+
+                const unitPrice = overrides.length === 1 ? new Decimal(overrides[0]) : new Decimal(producto.cost_price.toString());
+                const lineTotal = unitPrice.mul(new Decimal(Number(totalQty)));
+                total_amount = total_amount.plus(lineTotal);
+
+                detallesParaInsertar.push({
                     product_id: producto.product_id,
-                    quantity: Number(item.quantity),
-                    stockActual: producto.stock
+                    quantity: Number(totalQty),
+                    unit_price: unitPrice.toFixed(2)
                 });
             }
 
+            // Create purchase master with computed total
             const nuevaCompraMaestro = await tx.purchases.create({
                 data: {
                     supplier_id: Number(supplier_id),
-                    total_amount: total_amount
+                    total_amount: total_amount.toFixed(2)
                 }
             });
 
-            const detallesInsertados = [];
-            for (const item of productosVerificados) {
-                
-                const detalle = await tx.purchase_details.create({
-                    data: {
-                        purchase_id: nuevaCompraMaestro.purchase_id,
-                        product_id: item.product_id,
-                        quantity: item.quantity
-                    }
-                });
-                detallesInsertados.push(detalle);
+            // Insert details in batch
+            const detallesData = detallesParaInsertar.map(d => ({
+                purchase_id: nuevaCompraMaestro.purchase_id,
+                product_id: d.product_id,
+                quantity: d.quantity,
+                unit_price: d.unit_price
+            }));
 
+            if (detallesData.length > 0) {
+                await tx.purchase_details.createMany({ data: detallesData });
+            }
+
+            // Update stock atomically
+            for (const d of detallesParaInsertar) {
                 await tx.products.update({
-                    where: { product_id: item.product_id },
-                    data: {
-                        stock: item.stockActual + item.quantity
-                    }
+                    where: { product_id: d.product_id },
+                    data: { stock: { increment: d.quantity } }
                 });
             }
 
-			await createSystemMovement(tx, {
-				module_name: 'purchases',
-				user_id,
-				reference_id: nuevaCompraMaestro.purchase_id,
-				amount: total_amount,
-				actionType: 'REGISTRAR_COMPRA',
-				description: `Registró la compra ${nuevaCompraMaestro.purchase_id} del proveedor ${supplier_id} con ${items.length} ítems`
-			});
+            // Retrieve inserted details to return
+            const detallesInsertados = await tx.purchase_details.findMany({
+                where: { purchase_id: nuevaCompraMaestro.purchase_id }
+            });
+
+            await createSystemMovement(tx, {
+                module_name: 'purchases',
+                user_id,
+                reference_id: nuevaCompraMaestro.purchase_id,
+                amount: total_amount.toFixed(2),
+                actionType: 'REGISTRAR_COMPRA',
+                description: `Registró la compra ${nuevaCompraMaestro.purchase_id} del proveedor ${supplier_id} con ${items.length} ítems`
+            });
 
             return {
                 compra: nuevaCompraMaestro,

@@ -82,6 +82,7 @@ model purchase_details {
   purchase_id Int
   product_id  Int
   quantity    Int
+  unit_price  Decimal   @db.Decimal(15, 2)
   products    products  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_detailpurch_product")
   purchases   purchases @relation(fields: [purchase_id], references: [purchase_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_detailpurch_purch")
 }
