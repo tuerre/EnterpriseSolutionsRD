@@ -27,6 +27,8 @@ const addPurchase = require('./routes/purchases/add.purchase.js');
 const listPurchases = require('./routes/purchases/list.purchases.js');
 const addSales = require('./routes/sales/add.sales.js');
 const listSales = require('./routes/sales/list.sales.js');
+const addTaxType = require('./routes/tax_types/add.tax.type.js');
+const listTaxType = require('./routes/tax_types/list.tax.type.js');
 const { authenticateToken } = require('./middleware/middleware.js');
 const lowStockRoute = require('./routes/products/low.stock.products');
 const inventoryHistoryRoute = require('./routes/products/inventory.history');
@@ -101,6 +103,9 @@ app.use('/api/purchases', authenticateToken, listPurchases);
 // Sales routes
 app.use('/api/sales', authenticateToken, addSales);
 app.use('/api/sales', authenticateToken, listSales);
+// Tax types routes
+app.use('/api/tax-types', authenticateToken, addTaxType);
+app.use('/api/tax-types', authenticateToken, listTaxType);
 app.use('/products/stock', updateStockRoute);
 app.use('/products/low-stock', lowStockRoute);
 app.use('/products/history', inventoryHistoryRoute);

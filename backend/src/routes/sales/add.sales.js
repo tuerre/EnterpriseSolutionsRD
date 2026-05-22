@@ -37,10 +37,28 @@ const registrarVenta = async (req, res) => {
             let acumuladoTaxes = new Decimal(0);
             const productosVerificados = [];
 
+            const impuestoVigente = await tx.tax_types.findFirst({
+                orderBy: [
+                    { updated_at: 'desc' },
+                    { tax_id: 'desc' }
+                ],
+                select: {
+                    tax_id: true,
+                    name: true,
+                    percentage: true,
+                    updated_at: true
+                }
+            });
+
+            if (!impuestoVigente) {
+                throw new Error('No hay tipos de impuestos registrados. Registre ITBIS antes de procesar ventas.');
+            }
+
+            const porcentajeImpuestoVigente = new Decimal(impuestoVigente.percentage.toString()).div(100);
+
             for (const [productId, totalQuantity] of aggregated.entries()) {
                 const producto = await tx.products.findUnique({
-                    where: { product_id: Number(productId) },
-                    include: { tax_types: true }
+                    where: { product_id: Number(productId) }
                 });
 
                 if (!producto || producto.is_active === false) {
@@ -55,10 +73,7 @@ const registrarVenta = async (req, res) => {
                 const quantityDecimal = new Decimal(Number(totalQuantity));
                 const subtotalItem = unitPrice.mul(quantityDecimal);
 
-                const porcentajeImpuesto = producto.tax_types
-                    ? new Decimal(producto.tax_types.percentage.toString()).div(100)
-                    : new Decimal(0);
-                const taxItem = subtotalItem.mul(porcentajeImpuesto);
+                const taxItem = subtotalItem.mul(porcentajeImpuestoVigente);
 
                 acumuladoSubtotal = acumuladoSubtotal.plus(subtotalItem);
                 acumuladoTaxes = acumuladoTaxes.plus(taxItem);
@@ -117,7 +132,7 @@ const registrarVenta = async (req, res) => {
 				reference_id: nuevaVentaMaestro.sale_id,
 				amount: total_final.toFixed(2),
 				actionType: 'REGISTRAR_VENTA',
-				description: `Registró la venta ${invoice_number} con ${items.length} ítems`
+                description: `Registró la venta ${invoice_number} con ${items.length} ítems usando ITBIS ${impuestoVigente.percentage}%`
 			});
 
             return {
