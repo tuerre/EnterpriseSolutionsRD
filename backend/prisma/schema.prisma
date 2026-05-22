@@ -162,6 +162,12 @@ model tax_types {
   products   products[]
 }
 
+model Company_code {
+  code_id    Int        @id @default(autoincrement())
+  code       Int  
+  updated_at DateTime?  @default(now()) @db.Timestamp(6)
+}
+
 model users {
   user_id          Int                @id @default(autoincrement())
   employee_id      Int?               @unique
