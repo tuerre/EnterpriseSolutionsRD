@@ -84,6 +84,7 @@ router.post("/login", async (req, res) => {
 
 		return res.status(200).json({
 			message: "Login successful",
+			token,
 			user: {
 				user_id: user.user_id,
 				username: user.username,
@@ -125,6 +126,54 @@ router.post("/logout", authenticateToken, async (req, res) => {
 		});
 	} catch (error) {
 		console.error("Logout error:", error.message);
+		return res.status(500).json({ error: "Internal server error" });
+	}
+});
+
+router.get("/me", authenticateToken, async (req, res) => {
+	try {
+		const user = await prisma.users.findUnique({
+			where: { user_id: Number(req.user?.user_id) },
+			include: {
+				roles: {
+					include: {
+						permissions: {
+							include: {
+								modules: {
+									select: {
+										module_id: true,
+										name: true,
+										description: true,
+									},
+								},
+							},
+							orderBy: { module_id: 'asc' },
+						},
+					},
+				},
+				employees: true,
+			},
+		});
+
+		if (!user) {
+			return res.status(404).json({ error: 'User not found' });
+		}
+
+		return res.status(200).json({
+			user: {
+				user_id: user.user_id,
+				username: user.username,
+				employee_id: user.employee_id,
+				role_id: user.role_id,
+				role: user.roles,
+				employee: user.employees,
+				is_active: user.is_active,
+				created_at: user.created_at,
+			},
+			permissions: user.roles?.permissions || [],
+		});
+	} catch (error) {
+		console.error("Me error:", error.message);
 		return res.status(500).json({ error: "Internal server error" });
 	}
 });
