@@ -39,8 +39,6 @@ export default function UserPage() {
   const permissions = permissionsHook.permissionsQuery.data?.permissions || [];
   const employees = (userHook.employeesQuery.data?.data || []).filter((employee) => employee.is_active !== false);
   const activeRoles = roles.filter((role) => role.is_active !== false);
-  const currentUserId = Number(user?.user_id || user?.id || user?.userId || 0);
-  const selectedTargetId = Number(selectedUserId || 0);
 
   useEffect(() => {
     if (!permissionRoleId && activeRoles.length > 0) {
@@ -185,7 +183,7 @@ export default function UserPage() {
           <Input label="User ID" value={selectedUserId} onChange={(event) => setSelectedUserId(event.target.value)} placeholder="ID del usuario" />
           <label style={{ display: 'grid', gap: 6 }}>
             <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Rol</span>
-            <select value={selectedRoleId} onChange={(event) => setSelectedRoleId(event.target.value)} style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text)', padding: 12, appearance: 'none' }}>
+            <select value={selectedRoleId} onChange={(event) => setSelectedRoleId(event.target.value)} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text)', padding: 12 }}>
               <option value="">Selecciona</option>
               {activeRoles.map((role) => <option key={role.role_id} value={role.role_id}>{role.role_name}</option>)}
             </select>
@@ -194,7 +192,7 @@ export default function UserPage() {
             <Button variant="secondary" onClick={() => selectedUserId && selectedRoleId && userHook.updateRole.mutate({ userId: selectedUserId, role_id: Number(selectedRoleId) })}>
               <UserCog size={16} /> Asignar rol
             </Button>
-            <Button variant="danger" disabled={!selectedUserId || selectedTargetId === currentUserId} onClick={() => selectedUserId && selectedTargetId !== currentUserId && userHook.disable.mutate(Number(selectedUserId))}>
+            <Button variant="danger" onClick={() => selectedUserId && userHook.disable.mutate(Number(selectedUserId))}>
               <ShieldOff size={16} /> Desactivar
             </Button>
             <Button variant="secondary" onClick={() => selectedUserId && userHook.enable.mutate(Number(selectedUserId))}>
@@ -205,7 +203,6 @@ export default function UserPage() {
 
         <div style={{ color: 'var(--text2)', lineHeight: 1.7 }}>
           El backend no expone un listado completo de usuarios. Esta sección permite crear cuentas nuevas, asignarles rol y activar o desactivar una cuenta por ID cuando ya conoces el identificador.
-          {selectedTargetId === currentUserId ? ' La cuenta propia no puede desactivarse desde esta pantalla.' : ''}
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
