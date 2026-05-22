@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MODULE_ROUTES } from '../../modules/moduleRegistry';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../ui/Button';
