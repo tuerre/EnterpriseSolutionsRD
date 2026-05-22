@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -69,6 +70,14 @@ const eliminarProducto = async (req, res) => {
 			data: { is_active: false }
 		});
 
+		await createSystemMovement({
+			module_name: 'products',
+			user_id,
+			reference_id: Number(product_id),
+			actionType: 'ELIMINAR_PRODUCTO',
+			description: `Desactivó el producto ${productoEliminado.product_name}`
+		});
+
 		return res.status(200).json({
 			message: 'Product deleted successfully',
 			product: {
@@ -86,6 +95,6 @@ const eliminarProducto = async (req, res) => {
 };
 
 // ============ ROUTES ============
-router.delete('/:product_id', requireModulePermission('products', 'can_delete'), eliminarProducto);
+router.put('/:product_id', requireModulePermission('products', 'can_delete'), eliminarProducto);
 
 module.exports = router;

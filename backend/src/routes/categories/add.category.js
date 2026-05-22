@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -59,6 +60,14 @@ const addCategory = async (req, res) => {
 			data: {
 				category_name: category_name.trim()
 			}
+		});
+
+		await createSystemMovement({
+			module_name: 'categories',
+			user_id,
+			reference_id: categoryCreated.category_id,
+			actionType: 'CREAR_CATEGORIA',
+			description: `Creó la categoría "${categoryCreated.category_name}"`
 		});
 
 		return res.status(201).json({

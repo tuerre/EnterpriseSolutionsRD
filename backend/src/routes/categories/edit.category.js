@@ -5,10 +5,11 @@ const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
-// ============ DELETE A CATEGORY (SOFT DELETE) ============
-const deleteCategory = async (req, res) => {
+// ============ EDIT A CATEGORY ============
+const editCategory = async (req, res) => {
 	try {
 		const { category_id } = req.params;
+		const { category_name } = req.body;
 		const user_id = Number(req.user?.user_id);
 
 		// Validate authenticated user
@@ -25,7 +26,7 @@ const deleteCategory = async (req, res) => {
 
 		if (!usuarioAutenticado) {
 			return res.status(401).json({
-				error: 'Session is no longer valid. Please log in again to delete categories.'
+				error: 'Session is no longer valid. Please log in again to edit categories.'
 			});
 		}
 
@@ -47,8 +48,7 @@ const deleteCategory = async (req, res) => {
 			where: { category_id: Number(category_id) },
 			select: {
 				category_id: true,
-				category_name: true,
-				is_active: true
+				category_name: true
 			}
 		});
 
@@ -58,43 +58,66 @@ const deleteCategory = async (req, res) => {
 			});
 		}
 
-		if (categoryExisting.is_active === false) {
+		// ============ PREPARE DATA FOR UPDATE ============
+		const dataUpdate = {};
+
+		if (category_name !== undefined && category_name !== null) {
+			if (typeof category_name !== 'string' || category_name.trim() === '') {
+				return res.status(400).json({ error: 'Category name must be valid text' });
+			}
+
+			if (category_name.trim().length > 100) {
+				return res.status(400).json({ error: 'Category name cannot exceed 100 characters' });
+			}
+
+			const existingCategory = await prisma.categories.findUnique({
+				where: { category_name: category_name.trim() },
+				select: { category_id: true }
+			});
+
+			if (existingCategory && existingCategory.category_id !== Number(category_id)) {
+				return res.status(409).json({
+					error: 'Category name is already registered'
+				});
+			}
+
+			dataUpdate.category_name = category_name.trim();
+		}
+
+		// Verify that there is at least one field to update
+		if (Object.keys(dataUpdate).length === 0) {
 			return res.status(400).json({
-				error: 'Category is already inactive'
+				error: 'Must provide at least one field to update'
 			});
 		}
 
-		// ============ DELETE CATEGORY (SOFT DELETE) ============
-		const categoryDeleted = await prisma.categories.update({
+		// ============ UPDATE CATEGORY ============
+		const categoryUpdated = await prisma.categories.update({
 			where: { category_id: Number(category_id) },
-			data: { is_active: false }
+			data: dataUpdate
 		});
 
 		await createSystemMovement({
 			module_name: 'categories',
 			user_id,
 			reference_id: Number(category_id),
-			actionType: 'ELIMINAR_CATEGORIA',
-			description: `Desactivó la categoría ${categoryDeleted.category_name}`
+			actionType: 'ACTUALIZAR_CATEGORIA',
+			description: `Actualizó la categoría ${categoryUpdated.category_name}. Campos: ${Object.keys(dataUpdate).join(', ')}`
 		});
 
 		return res.status(200).json({
-			message: 'Category deleted successfully',
-			category: {
-				category_id: categoryDeleted.category_id,
-				category_name: categoryDeleted.category_name,
-				is_active: categoryDeleted.is_active
-			}
+			message: 'Category updated successfully',
+			category: categoryUpdated
 		});
 	} catch (error) {
-		console.error('Error deleting category:', error);
+		console.error('Error updating category:', error);
 		return res.status(500).json({
-			error: 'Internal server error while deleting the category'
+			error: 'Internal server error while updating the category'
 		});
 	}
 };
 
 // ============ ROUTES ============
-router.put('/:category_id', requireModulePermission('categories', 'can_delete'), deleteCategory);
+router.put('/:category_id', requireModulePermission('categories', 'can_update'), editCategory);
 
 module.exports = router;

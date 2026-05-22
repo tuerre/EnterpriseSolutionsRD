@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -60,9 +61,9 @@ const agregarProducto = async (req, res) => {
 			return res.status(400).json({ error: 'Product name cannot exceed 150 characters' });
 		}
 
-		// Validate description (optional, but if provided, validate)
-		if (description && typeof description !== 'string') {
-			return res.status(400).json({ error: 'Description must be valid text' });
+		// Validate description (required)
+		if (!description || typeof description !== 'string' || description.trim() === '') {
+			return res.status(400).json({ error: 'Description is required' });
 		}
 
 		// Validate category
@@ -109,9 +110,9 @@ const agregarProducto = async (req, res) => {
 			stockFinal = stockNum;
 		}
 
-		// Validate aisle location (optional)
-		if (aisle_location && typeof aisle_location !== 'string') {
-		return res.status(400).json({ error: 'Aisle location must be valid text' });
+		// Validate aisle location (required)
+		if (!aisle_location || typeof aisle_location !== 'string' || aisle_location.trim() === '') {
+			return res.status(400).json({ error: 'Aisle location is required' });
 		}
 
 		// ============ DATA INTEGRITY VERIFICATION ============
@@ -200,6 +201,15 @@ const agregarProducto = async (req, res) => {
 					}
 				}
 			});
+		});
+
+		await createSystemMovement({
+			module_name: 'products',
+			user_id,
+			reference_id: productoCreado.product_id,
+			amount: stockFinal,
+			actionType: 'CREAR_PRODUCTO',
+			description: `Creó el producto ${productoCreado.product_name}`
 		});
 
 		return res.status(201).json({

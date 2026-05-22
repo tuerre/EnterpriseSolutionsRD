@@ -1,14 +1,14 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
-// ============ EDIT A CATEGORY ============
-const editCategory = async (req, res) => {
+// ============ DELETE A CATEGORY (SOFT DELETE) ============
+const deleteCategory = async (req, res) => {
 	try {
 		const { category_id } = req.params;
-		const { category_name } = req.body;
 		const user_id = Number(req.user?.user_id);
 
 		// Validate authenticated user
@@ -25,7 +25,7 @@ const editCategory = async (req, res) => {
 
 		if (!usuarioAutenticado) {
 			return res.status(401).json({
-				error: 'Session is no longer valid. Please log in again to edit categories.'
+				error: 'Session is no longer valid. Please log in again to delete categories.'
 			});
 		}
 
@@ -47,7 +47,8 @@ const editCategory = async (req, res) => {
 			where: { category_id: Number(category_id) },
 			select: {
 				category_id: true,
-				category_name: true
+				category_name: true,
+				is_active: true
 			}
 		});
 
@@ -57,58 +58,49 @@ const editCategory = async (req, res) => {
 			});
 		}
 
-		// ============ PREPARE DATA FOR UPDATE ============
-		const dataUpdate = {};
-
-		if (category_name !== undefined && category_name !== null) {
-			if (typeof category_name !== 'string' || category_name.trim() === '') {
-				return res.status(400).json({ error: 'Category name must be valid text' });
-			}
-
-			if (category_name.trim().length > 100) {
-				return res.status(400).json({ error: 'Category name cannot exceed 100 characters' });
-			}
-
-			const existingCategory = await prisma.categories.findUnique({
-				where: { category_name: category_name.trim() },
-				select: { category_id: true }
-			});
-
-			if (existingCategory && existingCategory.category_id !== Number(category_id)) {
-				return res.status(409).json({
-					error: 'Category name is already registered'
-				});
-			}
-
-			dataUpdate.category_name = category_name.trim();
-		}
-
-		// Verify that there is at least one field to update
-		if (Object.keys(dataUpdate).length === 0) {
+		if (categoryExisting.is_active === false) {
 			return res.status(400).json({
-				error: 'Must provide at least one field to update'
+				error: 'Category is already inactive'
 			});
 		}
 
-		// ============ UPDATE CATEGORY ============
-		const categoryUpdated = await prisma.categories.update({
+		// ============ DELETE CATEGORY (SOFT DELETE) AND DEACTIVATE ASSOCIATED PRODUCTS ============
+		const categoryDeleted = await prisma.categories.update({
 			where: { category_id: Number(category_id) },
-			data: dataUpdate
+			data: { is_active: false }
+		});
+
+		// Deactivate all products associated with this category
+		const productosDesactivados = await prisma.products.updateMany({
+			where: { category_id: Number(category_id), is_active: true },
+			data: { is_active: false }
+		});
+
+		await createSystemMovement({
+			module_name: 'categories',
+			user_id,
+			reference_id: Number(category_id),
+			actionType: 'ELIMINAR_CATEGORIA',
+			description: `Desactivó la categoría ${categoryDeleted.category_name} y ${productosDesactivados.count} productos asociados`
 		});
 
 		return res.status(200).json({
-			message: 'Category updated successfully',
-			category: categoryUpdated
+			message: 'Category deleted successfully. All associated active products have been deactivated.',
+			category: {
+				category_id: categoryDeleted.category_id,
+				category_name: categoryDeleted.category_name,
+				is_active: categoryDeleted.is_active
+			}
 		});
 	} catch (error) {
-		console.error('Error updating category:', error);
+		console.error('Error deleting category:', error);
 		return res.status(500).json({
-			error: 'Internal server error while updating the category'
+			error: 'Internal server error while deleting the category'
 		});
 	}
 };
 
 // ============ ROUTES ============
-router.put('/:category_id', requireModulePermission('categories', 'can_update'), editCategory);
+router.put('/:category_id', requireModulePermission('categories', 'can_delete'), deleteCategory);
 
 module.exports = router;

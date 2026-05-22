@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../../prisma');
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
 
 const router = express.Router();
 
@@ -115,17 +116,13 @@ const actualizarStock = async (req, res) => {
 				}
 			});
 
-			const movimiento = await tx.system_movements.create({
-				data: {
-					module_id: 1,
-					user_id,
-					reference_id: Number(product_id),
-					action_type: type === 'IN'
-						? 'STOCK_IN'
-						: 'STOCK_OUT',
-					amount: Number(quantity),
-					notes: notes ? notes.trim() : null
-				}
+			const movimiento = await createSystemMovement(tx, {
+				module_name: 'products',
+				user_id,
+				reference_id: Number(product_id),
+				actionType: type === 'IN' ? 'ENTRADA_STOCK' : 'SALIDA_STOCK',
+				amount: Number(quantity),
+				description: notes ? notes.trim() : `Ajustó stock del producto ${productoActualizado.product_name}`
 			});
 
 			return {

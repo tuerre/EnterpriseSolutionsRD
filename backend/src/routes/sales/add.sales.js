@@ -1,15 +1,17 @@
 const express = require('express');
 const prisma = require('../../prisma'); 
 const { requireModulePermission } = require('../../middleware/middleware');
+const { createSystemMovement } = require('../../helpers/system-movements');
+const Decimal = require('decimal.js');
 
 const router = express.Router();
 
 const registrarVenta = async (req, res) => {
     const { payment_method, items } = req.body;
     
-    const user_id = req.user?.user_id;
+    const user_id = Number(req.user?.user_id);
 
-    if (!user_id) {
+    if (!Number.isInteger(user_id) || user_id <= 0) {
         return res.status(401).json({ error: "No se pudo identificar al usuario que procesa la venta." });
     }
 
@@ -19,47 +21,56 @@ const registrarVenta = async (req, res) => {
 
     try {
         const resultadoTransaccion = await prisma.$transaction(async (tx) => {
-            
-            let acumuladoSubtotal = 0;
-            let acumuladoTaxes = 0;
-            const productosVerificados = [];
-
+            // Aggregate duplicate product entries to keep the request deterministic.
+            const aggregated = new Map(); // product_id -> total quantity
             for (const item of items) {
                 if (!item.product_id || !item.quantity || Number(item.quantity) <= 0) {
                     throw new Error("Cada artículo debe tener un 'product_id' válido y una cantidad mayor a 0.");
                 }
 
+                const productId = Number(item.product_id);
+                const quantity = Number(item.quantity);
+                aggregated.set(productId, (aggregated.get(productId) || 0) + quantity);
+            }
+
+            let acumuladoSubtotal = new Decimal(0);
+            let acumuladoTaxes = new Decimal(0);
+            const productosVerificados = [];
+
+            for (const [productId, totalQuantity] of aggregated.entries()) {
                 const producto = await tx.products.findUnique({
-                    where: { product_id: Number(item.product_id) },
-                    include: { tax_types: true } 
+                    where: { product_id: Number(productId) },
+                    include: { tax_types: true }
                 });
 
-                if (!producto || !producto.is_active) {
-                    throw new Error(`El producto con ID ${item.product_id} no existe o no está activo.`);
+                if (!producto || producto.is_active === false) {
+                    throw new Error(`El producto con ID ${productId} no existe o no está activo.`);
                 }
 
-                if (producto.stock < Number(item.quantity)) {
+                if (producto.stock < Number(totalQuantity)) {
                     throw new Error(`Stock insuficiente para '${producto.product_name}'. Disponibles: ${producto.stock}.`);
                 }
 
-                const precioUnidad = Number(producto.sale_price);
-                const subtotalItem = precioUnidad * Number(item.quantity);
-                
-                const porcentajeImpuesto = producto.tax_types ? Number(producto.tax_types.percentage) / 100 : 0;
-                const taxItem = subtotalItem * porcentajeImpuesto;
+                const unitPrice = new Decimal(producto.sale_price.toString());
+                const quantityDecimal = new Decimal(Number(totalQuantity));
+                const subtotalItem = unitPrice.mul(quantityDecimal);
 
-                acumuladoSubtotal += subtotalItem;
-                acumuladoTaxes += taxItem;
+                const porcentajeImpuesto = producto.tax_types
+                    ? new Decimal(producto.tax_types.percentage.toString()).div(100)
+                    : new Decimal(0);
+                const taxItem = subtotalItem.mul(porcentajeImpuesto);
+
+                acumuladoSubtotal = acumuladoSubtotal.plus(subtotalItem);
+                acumuladoTaxes = acumuladoTaxes.plus(taxItem);
 
                 productosVerificados.push({
                     product_id: producto.product_id,
-                    quantity: Number(item.quantity),
-                    unit_price: precioUnidad,
-                    stockActual: producto.stock
+                    quantity: Number(totalQuantity),
+                    unit_price: unitPrice.toFixed(2)
                 });
             }
 
-            const total_final = acumuladoSubtotal + acumuladoTaxes;
+            const total_final = acumuladoSubtotal.plus(acumuladoTaxes);
 
             const timestamp = Date.now();
             const randomId = Math.floor(1000 + Math.random() * 9000);
@@ -69,33 +80,45 @@ const registrarVenta = async (req, res) => {
                 data: {
                     invoice_number: invoice_number,
                     user_id: Number(user_id),
-                    subtotal: acumuladoSubtotal,
-                    taxes: acumuladoTaxes,
-                    total_final: total_final,
+                    subtotal: acumuladoSubtotal.toFixed(2),
+                    taxes: acumuladoTaxes.toFixed(2),
+                    total_final: total_final.toFixed(2),
                     payment_method: payment_method || "Efectivo"
                 }
             });
 
-            const detallesInsertados = [];
-            for (const item of productosVerificados) {
-                
-                const detalle = await tx.sale_details.create({
-                    data: {
-                        sale_id: nuevaVentaMaestro.sale_id,
-                        product_id: item.product_id,
-                        quantity: item.quantity,
-                        unit_price: item.unit_price
-                    }
-                });
-                detallesInsertados.push(detalle);
+            const detallesData = productosVerificados.map(item => ({
+                sale_id: nuevaVentaMaestro.sale_id,
+                product_id: item.product_id,
+                quantity: item.quantity,
+                unit_price: item.unit_price
+            }));
 
+            if (detallesData.length > 0) {
+                await tx.sale_details.createMany({ data: detallesData });
+            }
+
+            for (const item of productosVerificados) {
                 await tx.products.update({
                     where: { product_id: item.product_id },
                     data: {
-                        stock: item.stockActual - item.quantity
+                        stock: { decrement: item.quantity }
                     }
                 });
             }
+
+            const detallesInsertados = await tx.sale_details.findMany({
+                where: { sale_id: nuevaVentaMaestro.sale_id }
+            });
+
+			await createSystemMovement(tx, {
+				module_name: 'sales',
+				user_id,
+				reference_id: nuevaVentaMaestro.sale_id,
+				amount: total_final.toFixed(2),
+				actionType: 'REGISTRAR_VENTA',
+				description: `Registró la venta ${invoice_number} con ${items.length} ítems`
+			});
 
             return {
                 factura: nuevaVentaMaestro,

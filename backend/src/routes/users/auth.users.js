@@ -3,6 +3,7 @@ const { verify } = require("argon2");
 const jwt = require("jsonwebtoken");
 const prisma = require("../../prisma");
 const { authenticateToken, revokeToken } = require("../../middleware/middleware");
+const { createSystemMovement } = require("../../helpers/system-movements");
 
 const router = Router();
 
@@ -73,6 +74,14 @@ router.post("/login", async (req, res) => {
 
 		console.log("Login successful");
 
+		await createSystemMovement({
+			module_name: 'users',
+			user_id: user.user_id,
+			reference_id: user.user_id,
+			actionType: 'INICIAR_SESION',
+			description: `Inicio de sesión exitoso de ${user.username}`
+		});
+
 		return res.status(200).json({
 			message: "Login successful",
 			user: {
@@ -102,6 +111,14 @@ router.post("/logout", authenticateToken, async (req, res) => {
 		});
 
 		console.log("Logout successful");
+
+		await createSystemMovement({
+			module_name: 'users',
+			user_id: Number(req.user?.user_id),
+			reference_id: Number(req.user?.user_id),
+			actionType: 'CERRAR_SESION',
+			description: `Cerró la sesión del usuario ${req.user?.username || 'desconocido'}`
+		});
 
 		return res.status(200).json({
 			message: "Logout successful",

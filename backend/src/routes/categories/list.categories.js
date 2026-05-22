@@ -4,33 +4,36 @@ const { requireModulePermission } = require('../../middleware/middleware');
 
 const router = express.Router();
 
+// ============ HELPER FUNCTION TO VALIDATE AUTHENTICATED USER ============
+const validateAuthenticatedUser = async (req, context) => {
+	const user_id = Number(req.user?.user_id);
+
+	if (!Number.isInteger(user_id) || user_id <= 0) {
+		return { valid: false, status: 400, error: 'Could not determine authenticated user' };
+	}
+
+	const usuarioAutenticado = await prisma.users.findUnique({
+		where: { user_id },
+		select: { user_id: true, is_active: true }
+	});
+
+	if (!usuarioAutenticado) {
+		return { valid: false, status: 401, error: `Session is no longer valid. Please log in again${context ? ' to ' + context : ''}.` };
+	}
+
+	if (usuarioAutenticado.is_active === false) {
+		return { valid: false, status: 403, error: 'Authenticated user is inactive' };
+	}
+
+	return { valid: true };
+};
+
 // ============ LIST CATEGORIES ============
 const listCategories = async (req, res) => {
 	try {
-		const user_id = Number(req.user?.user_id);
-
-		// Validate authenticated user
-		if (!Number.isInteger(user_id) || user_id <= 0) {
-			return res.status(400).json({
-				error: 'Could not determine authenticated user'
-			});
-		}
-
-		const usuarioAutenticado = await prisma.users.findUnique({
-			where: { user_id },
-			select: { user_id: true, is_active: true }
-		});
-
-		if (!usuarioAutenticado) {
-			return res.status(401).json({
-				error: 'Session is no longer valid. Please log in again to list categories.'
-			});
-		}
-
-		if (usuarioAutenticado.is_active === false) {
-			return res.status(403).json({
-				error: 'Authenticated user is inactive'
-			});
+		const userValidation = await validateAuthenticatedUser(req, 'list categories');
+		if (!userValidation.valid) {
+			return res.status(userValidation.status).json({ error: userValidation.error });
 		}
 
 		// ============ SEARCH AND PAGINATION PARAMETERS ============
@@ -113,30 +116,9 @@ const listCategories = async (req, res) => {
 const getCategory = async (req, res) => {
 	try {
 		const { category_id } = req.params;
-		const user_id = Number(req.user?.user_id);
-
-		// Validate authenticated user
-		if (!Number.isInteger(user_id) || user_id <= 0) {
-			return res.status(400).json({
-				error: 'Could not determine authenticated user'
-			});
-		}
-
-		const usuarioAutenticado = await prisma.users.findUnique({
-			where: { user_id },
-			select: { user_id: true, is_active: true }
-		});
-
-		if (!usuarioAutenticado) {
-			return res.status(401).json({
-				error: 'Session is no longer valid. Please log in again.'
-			});
-		}
-
-		if (usuarioAutenticado.is_active === false) {
-			return res.status(403).json({
-				error: 'Authenticated user is inactive'
-			});
+		const userValidation = await validateAuthenticatedUser(req);
+		if (!userValidation.valid) {
+			return res.status(userValidation.status).json({ error: userValidation.error });
 		}
 
 		// ============ VALIDATE CATEGORY_ID ============
