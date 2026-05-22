@@ -9,7 +9,7 @@ const router = Router();
 router.post("/register", authenticateToken, requireModulePermission("users", "can_insert"),
     async (req, res) => {
         try {
-            const { username, password, employee_id, role_name } = req.body;
+            const { username, password, employee_id, role_name, role_id } = req.body;
 
             // Validate required fields
             if (!username || !password) {
@@ -38,41 +38,63 @@ router.post("/register", authenticateToken, requireModulePermission("users", "ca
                 }
             }
 
+            const requestedRoleId = role_id === undefined || role_id === null || role_id === ''
+                ? null
+                : Number(role_id);
             const resolvedRoleName = role_name || `${username}_role`;
 
             // Hash password before transaction work
             const hashedPassword = await hash(password);
 
             const createdData = await prisma.$transaction(async (tx) => {
-                // Create a dedicated role for the new user
-                const createdRole = await tx.roles.create({
-                    data: {
-                        role_name: resolvedRoleName,
-                        description: `Auto-generated role for user ${username}`,
-                        is_active: true,
-                    },
-                    select: {
-                        role_id: true,
-                        role_name: true,
-                    },
-                });
+                let createdRole = null;
 
-                // Seed permissions for every existing module (all false by default)
-                const modules = await tx.modules.findMany({
-                    select: { module_id: true },
-                });
-
-                if (modules.length > 0) {
-                    await tx.permissions.createMany({
-                        data: modules.map((module) => ({
-                            role_id: createdRole.role_id,
-                            module_id: module.module_id,
-                            can_read: false,
-                            can_insert: false,
-                            can_update: false,
-                            can_delete: false,
-                        })),
+                if (requestedRoleId) {
+                    const existingRole = await tx.roles.findUnique({
+                        where: { role_id: requestedRoleId },
+                        select: { role_id: true, role_name: true, is_active: true },
                     });
+
+                    if (!existingRole) {
+                        throw new Error(`Role with ID ${requestedRoleId} was not found`);
+                    }
+
+                    if (existingRole.is_active === false) {
+                        throw new Error(`Role with ID ${requestedRoleId} is inactive`);
+                    }
+
+                    createdRole = existingRole;
+                } else {
+                    // Create a dedicated role for the new user when no role_id is provided
+                    createdRole = await tx.roles.create({
+                        data: {
+                            role_name: resolvedRoleName,
+                            description: `Auto-generated role for user ${username}`,
+                            is_active: true,
+                        },
+                        select: {
+                            role_id: true,
+                            role_name: true,
+                        },
+                    });
+
+                    // Seed permissions for every existing module (all false by default)
+                    const modules = await tx.modules.findMany({
+                        select: { module_id: true },
+                    });
+
+                    if (modules.length > 0) {
+                        await tx.permissions.createMany({
+                            data: modules.map((module) => ({
+                                role_id: createdRole.role_id,
+                                module_id: module.module_id,
+                                can_read: false,
+                                can_insert: false,
+                                can_update: false,
+                                can_delete: false,
+                            })),
+                        });
+                    }
                 }
 
                 // Create the user with the newly created role
