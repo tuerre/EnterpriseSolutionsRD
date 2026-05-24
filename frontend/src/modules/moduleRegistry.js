@@ -24,7 +24,7 @@ export const MODULE_ROUTES = [
   { name: 'suppliers', label: 'Proveedores', path: '/proveedores', icon: Truck, title: 'Proveedores', sidebarGroup: 'Funciones Administrativas' },
   { name: 'system_movements', label: 'Movimientos', path: '/movimientos', icon: Activity, title: 'Movimientos del sistema', sidebarGroup: 'Funciones Administrativas' },
   { name: 'tax_types', label: 'Impuestos', path: '/impuestos', icon: Percent, title: 'Tipos de impuesto' },
-  { name: 'user_settings', label: 'Configuración de usuarios', path: '/configuracion-usuarios', icon: Settings2, title: 'Configuración de usuarios', visible: true }
+  { name: 'user_settings', label: 'Configuración de usuarios', path: '/configuracion-usuarios', icon: Settings2, title: 'Configuración de usuarios', visible: true, sidebarGroup: 'Funciones Administrativas' }
 ];
 
 export const ROUTE_TITLE_MAP = Object.fromEntries(MODULE_ROUTES.map((item) => [item.path, item.title]));
