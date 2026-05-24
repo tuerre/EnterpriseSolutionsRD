@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
-import { assignUserRole, disableUser, enableUser, registerUser } from '../../api/users.api';
+import { assignUserRole, disableUser, enableUser, getAllUsers, registerUser } from '../../api/users.api';
 import { getAllRoles } from '../../api/roles.api';
 import { getAllEmployees } from '../../api/employees.api';
 
@@ -12,6 +12,11 @@ export const useUsers = () => {
 		queryFn: async () => (await getAllRoles()).data
 	});
 
+	const usersQuery = useQuery({
+		queryKey: ['users-list'],
+		queryFn: async () => (await getAllUsers()).data
+	});
+
 	const employeesQuery = useQuery({
 		queryKey: ['user-employees'],
 		queryFn: async () => (await getAllEmployees({ limit: 100 })).data
@@ -21,6 +26,7 @@ export const useUsers = () => {
 		mutationFn: registerUser,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['user-employees'] });
+			queryClient.invalidateQueries({ queryKey: ['users-list'] });
 			toast.success('Usuario creado exitosamente');
 		},
 		onError: (error) => toast.error(error.response?.data?.error || error.message || 'Error al crear el usuario')
@@ -28,21 +34,30 @@ export const useUsers = () => {
 
 	const disable = useMutation({
 		mutationFn: disableUser,
-		onSuccess: () => toast.success('Usuario desactivado exitosamente'),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['users-list'] });
+			toast.success('Usuario desactivado exitosamente');
+		},
 		onError: (error) => toast.error(error.response?.data?.error || error.message || 'Error al desactivar el usuario')
 	});
 
 	const enable = useMutation({
 		mutationFn: enableUser,
-		onSuccess: () => toast.success('Usuario activado exitosamente'),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['users-list'] });
+			toast.success('Usuario activado exitosamente');
+		},
 		onError: (error) => toast.error(error.response?.data?.error || error.message || 'Error al activar el usuario')
 	});
 
 	const updateRole = useMutation({
 		mutationFn: ({ userId, role_id }) => assignUserRole(userId, role_id),
-		onSuccess: () => toast.success('Rol asignado exitosamente'),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['users-list'] });
+			toast.success('Rol asignado exitosamente');
+		},
 		onError: (error) => toast.error(error.response?.data?.error || error.message || 'Error al asignar el rol')
 	});
 
-	return { rolesQuery, employeesQuery, create, disable, enable, updateRole };
+	return { rolesQuery, usersQuery, employeesQuery, create, disable, enable, updateRole };
 };

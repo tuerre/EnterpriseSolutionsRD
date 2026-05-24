@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Edit2, Plus, RotateCcw, ShieldCheck, ShieldOff, Users, UserCog } from 'lucide-react';
+import { Edit2, Plus, RotateCcw, ShieldCheck, ShieldOff, Users } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import Table from '../../components/ui/Table';
 import SearchBar from '../../components/ui/SearchBar';
 import Badge from '../../components/ui/Badge';
-import Input from '../../components/ui/Input';
 import { useRoles } from '../roles/useRoles';
 import RoleForm from '../roles/RoleForm';
 import { usePermissions } from '../permissions/usePermissions';
@@ -33,6 +32,8 @@ export default function UserPage() {
   const [isUserFormOpen, setIsUserFormOpen] = useState(false);
 
   const roles = roleHook.query.data?.roles || [];
+  const users = userHook.usersQuery.data?.users || [];
+  const usersErrorMessage = userHook.usersQuery.error?.response?.data?.error || userHook.usersQuery.error?.message || null;
   const filteredRoles = useMemo(() => roles.filter((item) => `${item.role_name} ${item.description || ''}`.toLowerCase().includes(roleSearch.toLowerCase())), [roles, roleSearch]);
   const permissionsHook = usePermissions(permissionRoleId);
   const modules = permissionsHook.modulesQuery.data?.data || [];
@@ -106,40 +107,25 @@ export default function UserPage() {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div>
             <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 26, fontWeight: 300 }}>Usuarios</h2>
-            <p style={{ color: 'var(--text2)' }}>Crea usuarios y cambia su estado por ID.</p>
+            <p style={{ color: 'var(--text2)' }}>Listado de usuarios registrados en el sistema.</p>
           </div>
           {hasPermission('users', 'can_insert') ? <Button onClick={() => setIsUserFormOpen(true)}><Users size={16} /> Nuevo usuario</Button> : null}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
-          <Input label="User ID" value={selectedUserId} onChange={(event) => setSelectedUserId(event.target.value)} placeholder="ID del usuario" />
-          <label style={{ display: 'grid', gap: 6 }}>
-            <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Rol</span>
-            <select value={selectedRoleId} onChange={(event) => setSelectedRoleId(event.target.value)} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text)', padding: 12 }}>
-              <option value="">Selecciona</option>
-              {activeRoles.map((role) => <option key={role.role_id} value={role.role_id}>{role.role_name}</option>)}
-            </select>
-          </label>
-          <div style={{ display: 'flex', alignItems: 'end', gap: 12, flexWrap: 'wrap' }}>
-            <Button variant="secondary" onClick={() => selectedUserId && selectedRoleId && userHook.updateRole.mutate({ userId: selectedUserId, role_id: Number(selectedRoleId) })}>
-              <UserCog size={16} /> Asignar rol
-            </Button>
-            <Button variant="danger" onClick={() => selectedUserId && userHook.disable.mutate(Number(selectedUserId))}>
-              <ShieldOff size={16} /> Desactivar
-            </Button>
-            <Button variant="secondary" onClick={() => selectedUserId && userHook.enable.mutate(Number(selectedUserId))}>
-              <ShieldCheck size={16} /> Activar
-            </Button>
-          </div>
-        </div>
-
-        <div style={{ color: 'var(--text2)', lineHeight: 1.7 }}>
-          El backend no expone un listado completo de usuarios. Esta sección permite crear cuentas nuevas, asignarles rol y activar o desactivar una cuenta por ID cuando ya conoces el identificador.
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Badge active={Boolean(user)}>{user?.username || 'Sin sesión'}</Badge>
-        </div>
+        <Table
+          columns={[
+            { key: 'user_id', label: 'ID' },
+            { key: 'username', label: 'Usuario' },
+            { key: 'employee', label: 'Empleado', render: (row) => row.employee ? `${row.employee.first_name} ${row.employee.last_name}` : 'Sin empleado' },
+            { key: 'role', label: 'Rol', render: (row) => row.role?.role_name || 'Sin rol' },
+            { key: 'status', label: 'Estado', render: (row) => <Badge active={row.is_active !== false} /> },
+            { key: 'created_at', label: 'Creado', render: (row) => row.created_at ? new Date(row.created_at).toLocaleString() : '—' }
+          ]}
+          data={users}
+          isLoading={userHook.usersQuery.isLoading}
+          emptyMessage={usersErrorMessage ? 'No se pudo cargar el listado de usuarios' : 'No hay usuarios registrados'}
+        />
+        {usersErrorMessage ? <div style={{ color: 'var(--danger)', fontSize: 13 }}>{usersErrorMessage}</div> : null}
       </section>
 
       <section style={{ display: 'grid', gap: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 4, padding: 24 }}>

@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 // Importar rutas
 const updateStockRoute = require('./routes/products/update.stock');
 const registerUsers = require('./routes/users/register.users.js');
+const listUsers = require('./routes/users/list.users.js');
 const authUsers = require('./routes/users/auth.users.js');
 const disableUsers = require('./routes/users/disable.users.js');
 const listCategories = require('./routes/categories/list.categories.js');
@@ -69,6 +70,7 @@ const io = new Server(httpServer, {
 // Rutas
 // User routes
 app.use('/api/users', registerUsers);
+app.use('/api/users', listUsers);
 app.use('/api/users', authUsers);
 app.use('/api/users', disableUsers);
 app.use('/api/users', authenticateToken, manageRolesPermissions);
