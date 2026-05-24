@@ -11,6 +11,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
 
   const adminItems = useMemo(() => MODULE_ROUTES.filter((item) => item.sidebarGroup === 'Funciones Administrativas' && (item.visible || hasPermission(item.name, 'can_read'))), [hasPermission]);
   const mainItems = useMemo(() => MODULE_ROUTES.filter((item) => item.name !== 'dashboard' && item.name !== 'departments' && item.name !== 'employees' && item.name !== 'suppliers' && item.name !== 'system_movements' && (item.visible || hasPermission(item.name, 'can_read'))), [hasPermission]);
+  const adminSpaceHeight = Math.max(0, adminItems.length * 50 + Math.max(0, adminItems.length - 1) * 6);
 
   const renderNavLink = (item, extraStyle = {}) => (
     <NavLink
@@ -79,11 +80,18 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               <ChevronDown size={16} style={{ transform: administrativeOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 200ms ease' }} />
             </button>
 
-            {administrativeOpen ? (
-              <div style={{ display: 'grid', gap: 6 }}>
+            <div style={{ position: 'relative', minHeight: adminSpaceHeight }}>
+              <div
+                style={{
+                  display: administrativeOpen ? 'grid' : 'none',
+                  gap: 6,
+                  position: 'absolute',
+                  inset: 0
+                }}
+              >
                 {adminItems.map((item) => renderNavLink(item))}
               </div>
-            ) : null}
+            </div>
           </div>
         ) : null}
       </nav>
