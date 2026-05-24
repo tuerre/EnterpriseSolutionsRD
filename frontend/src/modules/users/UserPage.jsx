@@ -117,7 +117,7 @@ export default function UserPage() {
             { key: 'user_id', label: 'ID' },
             { key: 'username', label: 'Usuario' },
             { key: 'employee', label: 'Empleado', render: (row) => row.employee ? `${row.employee.first_name} ${row.employee.last_name}` : 'Sin empleado' },
-            { key: 'role', label: 'Rol', render: (row) => row.role?.role_name || 'Sin rol' },
+            { key: 'role', label: 'Rol', render: (row) => row.role ? `#${row.role.role_id} - ${row.role.role_name}` : 'Sin rol' },
             { key: 'status', label: 'Estado', render: (row) => <Badge active={row.is_active !== false} /> },
             { key: 'created_at', label: 'Creado', render: (row) => row.created_at ? new Date(row.created_at).toLocaleString() : '—' }
           ]}
@@ -141,6 +141,7 @@ export default function UserPage() {
 
         <Table
           columns={[
+            { key: 'role_id', label: 'ID' },
             { key: 'role_name', label: 'Rol' },
             { key: 'description', label: 'Descripción' },
             { key: 'users_count', label: 'Usuarios', render: (row) => row.users_count ?? 0 },

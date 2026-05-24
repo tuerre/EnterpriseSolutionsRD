@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-hot-toast';
-import { getRoles, getRolePermissions, updateRolePermissions } from '../../api/permissions.api';
+import { getRolePermissions, updateRolePermissions } from '../../api/permissions.api';
+import { getAllRoles } from '../../api/roles.api';
 import { getAllModules } from '../../api/modules.api';
 
 export const usePermissions = (roleId) => {
@@ -8,7 +9,7 @@ export const usePermissions = (roleId) => {
 
 	const rolesQuery = useQuery({
 		queryKey: ['permissions-roles'],
-		queryFn: async () => (await getRoles()).data
+		queryFn: async () => (await getAllRoles()).data
 	});
 
 	const modulesQuery = useQuery({

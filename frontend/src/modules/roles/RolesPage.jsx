@@ -40,6 +40,7 @@ export default function RolesPage() {
 
       <Table
         columns={[
+          { key: 'role_id', label: 'ID' },
           { key: 'role_name', label: 'Nombre del Rol' },
           { key: 'description', label: 'Descripción' },
           { key: 'status', label: 'Estado', render: (row) => <Badge active={row.is_active !== false} /> },

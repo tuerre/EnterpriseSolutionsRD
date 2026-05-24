@@ -51,7 +51,7 @@ export default function PermissionPage() {
       <label style={{ display: 'grid', gap: 6, maxWidth: 360 }}>
         <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Rol</span>
         <select value={roleId} onChange={(event) => setRoleId(event.target.value)} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text)', padding: 12 }}>
-          {roles.map((role) => <option key={role.role_id} value={role.role_id}>{role.role_name}</option>)}
+          {roles.map((role) => <option key={role.role_id} value={role.role_id}>#{role.role_id} - {role.role_name}</option>)}
         </select>
       </label>
 

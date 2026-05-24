@@ -46,7 +46,7 @@ export default function UserForm({ roles, employees, onSubmit, loading, onCancel
         <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Rol *</span>
         <select {...register('role_id')} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text)', padding: 12 }}>
           <option value="">Selecciona</option>
-          {roles.map((role) => <option key={role.role_id} value={role.role_id}>{role.role_name}</option>)}
+          {roles.map((role) => <option key={role.role_id} value={role.role_id}>#{role.role_id} - {role.role_name}</option>)}
         </select>
       </label>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
