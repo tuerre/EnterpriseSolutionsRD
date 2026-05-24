@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ChevronDown, LogOut, Settings2 } from 'lucide-react';
 import { MODULE_ROUTES } from '../../modules/moduleRegistry';
@@ -9,9 +9,33 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   const { hasPermission, logout } = useAuth();
   const [administrativeOpen, setAdministrativeOpen] = useState(true);
 
-  const adminItems = useMemo(() => MODULE_ROUTES.filter((item) => item.sidebarGroup === 'Funciones Administrativas' && (item.visible || hasPermission(item.name, 'can_read'))), [hasPermission]);
-  const mainItems = useMemo(() => MODULE_ROUTES.filter((item) => item.name !== 'dashboard' && !item.sidebarGroup && (item.visible || hasPermission(item.name, 'can_read'))), [hasPermission]);
-  const adminSpaceHeight = Math.max(0, adminItems.length * 50 + Math.max(0, adminItems.length - 1) * 6);
+  const rowHeight = 44;
+  const rowGap = 8;
+  const adminItems = MODULE_ROUTES.filter((item) => item.sidebarGroup === 'Funciones Administrativas');
+  const mainItems = MODULE_ROUTES.filter((item) => item.name !== 'dashboard' && !item.sidebarGroup);
+  const dashboardItem = MODULE_ROUTES.find((item) => item.name === 'dashboard');
+
+  const canViewItem = (item) => item.visible || hasPermission(item.name, 'can_read');
+  const visibleItems = (items) => items.filter((item) => canViewItem(item));
+  const hiddenSpaceHeight = [mainItems, adminItems].reduce((total, items) => {
+    const hiddenCount = items.length - visibleItems(items).length;
+    return total + hiddenCount;
+  }, 0) * (rowHeight + rowGap);
+
+  const baseLinkStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    width: '100%',
+    padding: '12px 14px',
+    borderRadius: 3,
+    borderLeft: '2px solid transparent',
+    background: 'transparent',
+    color: 'var(--text)',
+    transition: '200ms ease',
+    minHeight: 44,
+    boxSizing: 'border-box'
+  };
 
   const renderNavLink = (item, extraStyle = {}) => (
     <NavLink
@@ -19,18 +43,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       to={item.path}
       onClick={onCloseMobile}
       style={({ isActive }) => ({
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        width: '100%',
-        padding: '12px 14px',
-        borderRadius: 3,
+        ...baseLinkStyle,
         borderLeft: isActive ? '2px solid var(--accent)' : '2px solid transparent',
         background: isActive ? 'var(--surface2)' : 'transparent',
-        color: 'var(--text)',
-        transition: '200ms ease',
-        minHeight: 44,
-        boxSizing: 'border-box',
         ...extraStyle
       })}
     >
@@ -38,6 +53,8 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
       <span style={{ fontSize: 13, fontWeight: 400 }}>{item.label}</span>
     </NavLink>
   );
+
+  const renderNavGroup = (items) => visibleItems(items).map((item) => renderNavLink(item));
 
   const content = (
     <>
@@ -49,12 +66,12 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
         </div>
       </div>
 
-      <nav style={{ padding: '16px 12px', display: 'grid', gap: 8, flex: 1, overflowY: 'auto' }}>
-        {MODULE_ROUTES.find((item) => item.name === 'dashboard') ? renderNavLink(MODULE_ROUTES.find((item) => item.name === 'dashboard')) : null}
-        {mainItems.map((item) => renderNavLink(item))}
+      <nav style={{ padding: '16px 12px', display: 'flex', flexDirection: 'column', gap: rowGap, flex: 1, overflowY: 'auto' }}>
+        {dashboardItem ? renderNavLink(dashboardItem) : null}
+        {renderNavGroup(mainItems)}
 
         {adminItems.length > 0 ? (
-          <div style={{ display: 'grid', gap: 6, marginTop: 6 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: rowGap, marginTop: 6 }}>
             <button
               type="button"
               onClick={() => setAdministrativeOpen((value) => !value)}
@@ -70,7 +87,9 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
                 background: 'var(--surface2)',
                 color: 'var(--text)',
                 cursor: 'pointer',
-                boxSizing: 'border-box'
+                boxSizing: 'border-box',
+                minHeight: rowHeight,
+                flex: '0 0 auto'
               }}
             >
               <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -80,20 +99,13 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
               <ChevronDown size={16} style={{ transform: administrativeOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 200ms ease' }} />
             </button>
 
-            <div style={{ position: 'relative', minHeight: adminSpaceHeight }}>
-              <div
-                style={{
-                  display: administrativeOpen ? 'grid' : 'none',
-                  gap: 6,
-                  position: 'absolute',
-                  inset: 0
-                }}
-              >
-                {adminItems.map((item) => renderNavLink(item))}
-              </div>
+            <div style={{ display: administrativeOpen ? 'flex' : 'none', flexDirection: 'column', gap: rowGap }}>
+              {renderNavGroup(adminItems)}
             </div>
           </div>
         ) : null}
+
+        {hiddenSpaceHeight > 0 ? <div aria-hidden="true" style={{ height: hiddenSpaceHeight }} /> : null}
       </nav>
 
       <div style={{ padding: 16, borderTop: '1px solid var(--border)' }}>
