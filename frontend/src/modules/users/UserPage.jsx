@@ -105,6 +105,46 @@ export default function UserPage() {
       <section style={{ display: 'grid', gap: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 4, padding: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
           <div>
+            <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 26, fontWeight: 300 }}>Usuarios</h2>
+            <p style={{ color: 'var(--text2)' }}>Crea usuarios y cambia su estado por ID.</p>
+          </div>
+          {hasPermission('users', 'can_insert') ? <Button onClick={() => setIsUserFormOpen(true)}><Users size={16} /> Nuevo usuario</Button> : null}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
+          <Input label="User ID" value={selectedUserId} onChange={(event) => setSelectedUserId(event.target.value)} placeholder="ID del usuario" />
+          <label style={{ display: 'grid', gap: 6 }}>
+            <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Rol</span>
+            <select value={selectedRoleId} onChange={(event) => setSelectedRoleId(event.target.value)} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text)', padding: 12 }}>
+              <option value="">Selecciona</option>
+              {activeRoles.map((role) => <option key={role.role_id} value={role.role_id}>{role.role_name}</option>)}
+            </select>
+          </label>
+          <div style={{ display: 'flex', alignItems: 'end', gap: 12, flexWrap: 'wrap' }}>
+            <Button variant="secondary" onClick={() => selectedUserId && selectedRoleId && userHook.updateRole.mutate({ userId: selectedUserId, role_id: Number(selectedRoleId) })}>
+              <UserCog size={16} /> Asignar rol
+            </Button>
+            <Button variant="danger" onClick={() => selectedUserId && userHook.disable.mutate(Number(selectedUserId))}>
+              <ShieldOff size={16} /> Desactivar
+            </Button>
+            <Button variant="secondary" onClick={() => selectedUserId && userHook.enable.mutate(Number(selectedUserId))}>
+              <ShieldCheck size={16} /> Activar
+            </Button>
+          </div>
+        </div>
+
+        <div style={{ color: 'var(--text2)', lineHeight: 1.7 }}>
+          El backend no expone un listado completo de usuarios. Esta sección permite crear cuentas nuevas, asignarles rol y activar o desactivar una cuenta por ID cuando ya conoces el identificador.
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Badge active={Boolean(user)}>{user?.username || 'Sin sesión'}</Badge>
+        </div>
+      </section>
+
+      <section style={{ display: 'grid', gap: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 4, padding: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+          <div>
             <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 26, fontWeight: 300 }}>Roles</h2>
             <p style={{ color: 'var(--text2)' }}>Crea, edita y activa o desactiva roles.</p>
           </div>
@@ -167,46 +207,6 @@ export default function UserPage() {
               ))}
             </tbody>
           </table>
-        </div>
-      </section>
-
-      <section style={{ display: 'grid', gap: 16, background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 4, padding: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-          <div>
-            <h2 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 26, fontWeight: 300 }}>Usuarios</h2>
-            <p style={{ color: 'var(--text2)' }}>Crea usuarios y cambia su estado por ID.</p>
-          </div>
-          {hasPermission('users', 'can_insert') ? <Button onClick={() => setIsUserFormOpen(true)}><Users size={16} /> Nuevo usuario</Button> : null}
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 16 }}>
-          <Input label="User ID" value={selectedUserId} onChange={(event) => setSelectedUserId(event.target.value)} placeholder="ID del usuario" />
-          <label style={{ display: 'grid', gap: 6 }}>
-            <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Rol</span>
-            <select value={selectedRoleId} onChange={(event) => setSelectedRoleId(event.target.value)} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text)', padding: 12 }}>
-              <option value="">Selecciona</option>
-              {activeRoles.map((role) => <option key={role.role_id} value={role.role_id}>{role.role_name}</option>)}
-            </select>
-          </label>
-          <div style={{ display: 'flex', alignItems: 'end', gap: 12, flexWrap: 'wrap' }}>
-            <Button variant="secondary" onClick={() => selectedUserId && selectedRoleId && userHook.updateRole.mutate({ userId: selectedUserId, role_id: Number(selectedRoleId) })}>
-              <UserCog size={16} /> Asignar rol
-            </Button>
-            <Button variant="danger" onClick={() => selectedUserId && userHook.disable.mutate(Number(selectedUserId))}>
-              <ShieldOff size={16} /> Desactivar
-            </Button>
-            <Button variant="secondary" onClick={() => selectedUserId && userHook.enable.mutate(Number(selectedUserId))}>
-              <ShieldCheck size={16} /> Activar
-            </Button>
-          </div>
-        </div>
-
-        <div style={{ color: 'var(--text2)', lineHeight: 1.7 }}>
-          El backend no expone un listado completo de usuarios. Esta sección permite crear cuentas nuevas, asignarles rol y activar o desactivar una cuenta por ID cuando ya conoces el identificador.
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Badge active={Boolean(user)}>{user?.username || 'Sin sesión'}</Badge>
         </div>
       </section>
 

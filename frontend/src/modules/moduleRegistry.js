@@ -16,13 +16,13 @@ import {
 export const MODULE_ROUTES = [
   { name: 'dashboard', label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard, title: 'Dashboard', visible: true },
   { name: 'categories', label: 'Categorías', path: '/categorias', icon: Tag, title: 'Categorías' },
-  { name: 'departments', label: 'Departamentos', path: '/departamentos', icon: Building2, title: 'Departamentos' },
-  { name: 'employees', label: 'Empleados', path: '/empleados', icon: Users, title: 'Empleados' },
+  { name: 'departments', label: 'Departamentos', path: '/departamentos', icon: Building2, title: 'Departamentos', sidebarGroup: 'Funciones Administrativas' },
+  { name: 'employees', label: 'Empleados', path: '/empleados', icon: Users, title: 'Empleados', sidebarGroup: 'Funciones Administrativas' },
   { name: 'products', label: 'Productos', path: '/productos', icon: Package, title: 'Productos' },
   { name: 'purchases', label: 'Compras', path: '/compras', icon: ShoppingCart, title: 'Compras' },
   { name: 'sales', label: 'Ventas', path: '/ventas', icon: Receipt, title: 'Ventas' },
-  { name: 'suppliers', label: 'Proveedores', path: '/proveedores', icon: Truck, title: 'Proveedores' },
-  { name: 'system_movements', label: 'Movimientos', path: '/movimientos', icon: Activity, title: 'Movimientos del sistema' },
+  { name: 'suppliers', label: 'Proveedores', path: '/proveedores', icon: Truck, title: 'Proveedores', sidebarGroup: 'Funciones Administrativas' },
+  { name: 'system_movements', label: 'Movimientos', path: '/movimientos', icon: Activity, title: 'Movimientos del sistema', sidebarGroup: 'Funciones Administrativas' },
   { name: 'tax_types', label: 'Impuestos', path: '/impuestos', icon: Percent, title: 'Tipos de impuesto' },
   { name: 'user_settings', label: 'Configuración de usuarios', path: '/configuracion-usuarios', icon: Settings2, title: 'Configuración de usuarios', visible: true }
 ];
