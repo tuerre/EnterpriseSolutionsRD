@@ -10,7 +10,7 @@ export default function Sidebar({ mobileOpen, onCloseMobile }) {
   const [administrativeOpen, setAdministrativeOpen] = useState(true);
 
   const adminItems = useMemo(() => MODULE_ROUTES.filter((item) => item.sidebarGroup === 'Funciones Administrativas' && (item.visible || hasPermission(item.name, 'can_read'))), [hasPermission]);
-  const mainItems = useMemo(() => MODULE_ROUTES.filter((item) => item.name !== 'dashboard' && item.name !== 'departments' && item.name !== 'employees' && item.name !== 'suppliers' && item.name !== 'system_movements' && (item.visible || hasPermission(item.name, 'can_read'))), [hasPermission]);
+  const mainItems = useMemo(() => MODULE_ROUTES.filter((item) => item.name !== 'dashboard' && !item.sidebarGroup && (item.visible || hasPermission(item.name, 'can_read'))), [hasPermission]);
   const adminSpaceHeight = Math.max(0, adminItems.length * 50 + Math.max(0, adminItems.length - 1) * 6);
 
   const renderNavLink = (item, extraStyle = {}) => (
