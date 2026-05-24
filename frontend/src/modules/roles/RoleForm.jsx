@@ -11,7 +11,7 @@ const schema = z.object({
   is_active: z.boolean().optional()
 });
 
-export default function RoleForm({ initialValues, onSubmit, loading, onCancel }) {
+export default function RoleForm({ initialValues, onSubmit, loading, onCancel, showStatusField = false }) {
   const { register, handleSubmit, formState: { errors }, reset, setFocus } = useForm({
     resolver: zodResolver(schema),
     defaultValues: { role_name: initialValues?.role_name || '', description: initialValues?.description || '', is_active: initialValues?.is_active ?? true }
@@ -29,10 +29,14 @@ export default function RoleForm({ initialValues, onSubmit, loading, onCancel })
         <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Descripción</span>
         <textarea {...register('description')} rows={4} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text)', padding: 12, outline: 'none', resize: 'vertical' }} />
       </label>
-      <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <input type="checkbox" {...register('is_active')} defaultChecked />
-        <span style={{ color: 'var(--text2)', fontSize: 13 }}>Activo</span>
-      </label>
+      {showStatusField ? (
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <input type="checkbox" {...register('is_active')} defaultChecked />
+          <span style={{ color: 'var(--text2)', fontSize: 13 }}>Activo</span>
+        </label>
+      ) : (
+        <p style={{ margin: 0, color: 'var(--text2)', fontSize: 13 }}></p>
+      )}
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
         <Button variant="secondary" type="button" onClick={onCancel}>Cancelar</Button>
         <Button type="submit" loading={loading}>Guardar</Button>
