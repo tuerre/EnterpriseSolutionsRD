@@ -65,7 +65,7 @@ export function Categorias() {
               <input
                 type="text"
                 placeholder="Ej: Periféricos"
-                className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+                className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
                 value={newCategoria}
                 onChange={(e) => setNewCategoria(e.target.value)}
               />
@@ -85,13 +85,13 @@ export function Categorias() {
               categorias.map((cat, index) => (
                 <div key={index} className="flex items-center justify-between p-4 glass glass-hover border border-white/10 rounded-xl transition-all group">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#d946ef]/10 flex items-center justify-center">
-                      <Tag className="w-4 h-4 text-[#d946ef]" />
+                    <div className="w-8 h-8 rounded-lg bg-[#10b981]/10 flex items-center justify-center">
+                      <Tag className="w-4 h-4 text-[#10b981]" />
                     </div>
                     {editingIndex === index ? (
                       <input
                         type="text"
-                        className="bg-transparent border-b border-[#d946ef] text-white focus:outline-none"
+                        className="bg-transparent border-b border-[#10b981] text-white focus:outline-none"
                         value={editValue}
                         onChange={(e) => setEditValue(e.target.value)}
                         onBlur={handleSaveEdit}
@@ -104,7 +104,7 @@ export function Categorias() {
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button 
                       onClick={() => startEdit(index, cat)}
-                      className="p-1.5 text-[#94a3b8] hover:text-[#d946ef] transition-colors"
+                      className="p-1.5 text-[#94a3b8] hover:text-[#10b981] transition-colors"
                     >
                       <Edit className="w-4 h-4" />
                     </button>

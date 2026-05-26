@@ -45,7 +45,7 @@ export function Sidebar() {
       {/* Logo y título */}
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#d946ef] to-[#7c3aed] flex items-center justify-center shadow-[0_0_20px_rgba(217,70,239,0.4)]">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#10b981] to-[#34d399] flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.4)]">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -63,7 +63,7 @@ export function Sidebar() {
       <div className="p-4 border-b border-white/10">
         <div className="glass glass-hover rounded-xl p-3 transition-all duration-300">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#d946ef] to-[#8b5cf6] flex items-center justify-center text-white font-bold shadow-[0_0_15px_rgba(217,70,239,0.3)]">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#10b981] to-[#6ee7b7] flex items-center justify-center text-white font-bold shadow-[0_0_15px_rgba(16,185,129,0.3)]">
               {user?.nombre.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
@@ -92,15 +92,15 @@ export function Sidebar() {
                   className={`
                     group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 relative
                     ${isActive
-                      ? 'bg-[rgba(217,70,239,0.2)] text-white border-l-4 border-[#d946ef] shadow-[0_0_20px_rgba(217,70,239,0.2)]'
+                      ? 'bg-[rgba(16,185,129,0.2)] text-white border-l-4 border-[#10b981] shadow-[0_0_20px_rgba(16,185,129,0.2)]'
                       : 'text-[#94a3b8] hover:bg-white/5 hover:text-white border-l-4 border-transparent'
                     }
                   `}
                 >
-                  <Icon className={`w-5 h-5 transition-all duration-300 ${isActive ? 'text-[#d946ef]' : 'group-hover:text-[#d946ef]'}`} />
+                  <Icon className={`w-5 h-5 transition-all duration-300 ${isActive ? 'text-[#10b981]' : 'group-hover:text-[#10b981]'}`} />
                   <span className="text-sm font-semibold">{item.label}</span>
                   {isActive && (
-                    <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-[#d946ef] animate-pulse"></div>
+                    <div className="absolute right-3 w-1.5 h-1.5 rounded-full bg-[#10b981] animate-pulse"></div>
                   )}
                 </Link>
               </li>

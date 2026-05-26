@@ -428,7 +428,7 @@ export function Admin() {
             <input
               type="text"
               required
-              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
               value={formData.nombre}
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
             />
@@ -438,7 +438,7 @@ export function Admin() {
             <input
               type="email"
               required
-              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
@@ -447,7 +447,7 @@ export function Admin() {
             <div>
               <label className="block text-sm font-medium text-[#94a3b8] mb-1">Rol</label>
               <select
-                className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+                className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
                 value={formData.rol}
                 onChange={(e) => setFormData({ ...formData, rol: e.target.value })}
               >
@@ -460,7 +460,7 @@ export function Admin() {
             <div>
               <label className="block text-sm font-medium text-[#94a3b8] mb-1">Estado</label>
               <select
-                className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+                className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
                 value={formData.estado}
                 onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
               >

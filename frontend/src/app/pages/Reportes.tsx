@@ -73,7 +73,7 @@ export function Reportes() {
               <label className="block text-xs text-[#94a3b8] mb-1">Desde</label>
               <input
                 type="date"
-                className="px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+                className="px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
               />
@@ -82,7 +82,7 @@ export function Reportes() {
               <label className="block text-xs text-[#94a3b8] mb-1">Hasta</label>
               <input
                 type="date"
-                className="px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+                className="px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
                 value={dateTo}
                 onChange={(e) => setDateTo(e.target.value)}
               />
@@ -138,7 +138,7 @@ export function Reportes() {
             {ventasFiltradas.slice(0, 5).map((venta, index) => (
               <div key={index} className="flex items-center justify-between p-4 glass glass-hover border border-white/10 rounded-xl transition-all">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#d946ef] to-[#7c3aed] text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg shadow-[#d946ef]/20">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#10b981] to-[#34d399] text-white rounded-full flex items-center justify-center font-bold text-sm shadow-lg shadow-[#10b981]/20">
                     {index + 1}
                   </div>
                   <div>

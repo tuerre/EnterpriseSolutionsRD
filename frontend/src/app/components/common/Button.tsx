@@ -21,7 +21,7 @@ export function Button({
   const baseClasses = 'inline-flex items-center justify-center gap-2 font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0a0118] disabled:opacity-50 disabled:cursor-not-allowed active:scale-95';
 
   const variantClasses = {
-    primary: 'bg-gradient-to-r from-[#d946ef] to-[#7c3aed] text-white rounded-2xl shadow-[0_0_30px_rgba(217,70,239,0.3)] hover:shadow-[0_0_40px_rgba(217,70,239,0.5)] focus:ring-[#d946ef]',
+    primary: 'bg-gradient-to-r from-[#10b981] to-[#34d399] text-white rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:shadow-[0_0_40px_rgba(16,185,129,0.5)] focus:ring-[#10b981]',
     secondary: 'glass glass-hover rounded-2xl text-white border border-white/10 hover:border-white/20',
     danger: 'bg-gradient-to-r from-[#ef4444] to-[#dc2626] text-white rounded-2xl shadow-[0_0_30px_rgba(239,68,68,0.3)] hover:shadow-[0_0_40px_rgba(239,68,68,0.5)] focus:ring-[#ef4444]',
     ghost: 'text-[#94a3b8] hover:text-white hover:bg-white/5 rounded-lg',

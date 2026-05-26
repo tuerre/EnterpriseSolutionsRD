@@ -1,7 +1,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Cyber-Modern Dark Premium Colors */
+  /* Cyber-Modern Dark Premium Colors - Green Theme */
   --font-size: 16px;
   --background: #0a0118;
   --foreground: #ffffff;
@@ -9,11 +9,11 @@
   --card-foreground: #ffffff;
   --popover: rgba(255, 255, 255, 0.08);
   --popover-foreground: #ffffff;
-  --primary: #d946ef;
+  --primary: #10b981;
   --primary-foreground: #ffffff;
-  --secondary: #7c3aed;
+  --secondary: #34d399;
   --secondary-foreground: #ffffff;
-  --accent: #8b5cf6;
+  --accent: #6ee7b7;
   --accent-foreground: #ffffff;
   --muted: rgba(255, 255, 255, 0.05);
   --muted-foreground: #94a3b8;
@@ -25,12 +25,12 @@
   --switch-background: rgba(255, 255, 255, 0.1);
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #d946ef;
-  --chart-1: #d946ef;
-  --chart-2: #7c3aed;
-  --chart-3: #8b5cf6;
-  --chart-4: #a78bfa;
-  --chart-5: #c4b5fd;
+  --ring: #10b981;
+  --chart-1: #10b981;
+  --chart-2: #34d399;
+  --chart-3: #6ee7b7;
+  --chart-4: #a7f3d0;
+  --chart-5: #d1fae5;
   --radius: 1rem;
 
   /* Glassmorphism specific */
@@ -42,21 +42,21 @@
   /* Sidebar */
   --sidebar: rgba(255, 255, 255, 0.05);
   --sidebar-foreground: #ffffff;
-  --sidebar-primary: #d946ef;
+  --sidebar-primary: #10b981;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: rgba(217, 70, 239, 0.2);
+  --sidebar-accent: rgba(16, 185, 129, 0.2);
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: rgba(255, 255, 255, 0.1);
-  --sidebar-ring: #d946ef;
+  --sidebar-ring: #10b981;
 
   /* Custom colors */
   --color-surface: rgba(255, 255, 255, 0.05);
   --color-surface-hover: rgba(255, 255, 255, 0.1);
   --color-text-primary: #ffffff;
   --color-text-secondary: #94a3b8;
-  --color-magenta: #d946ef;
-  --color-purple: #7c3aed;
-  --color-violet: #8b5cf6;
+  --color-magenta: #10b981;
+  --color-purple: #34d399;
+  --color-violet: #6ee7b7;
 }
 
 .dark {
@@ -184,7 +184,7 @@
     font-weight: 800;
     line-height: 1.2;
     letter-spacing: -0.02em;
-    background: linear-gradient(135deg, var(--color-magenta) 0%, var(--color-purple) 100%);
+    background: linear-gradient(135deg, var(--color-magenta) 0%, var(--color-violet) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -256,8 +256,8 @@
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
 
   ::-webkit-scrollbar-track {
@@ -265,12 +265,13 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(217, 70, 239, 0.3);
-    border-radius: 4px;
+    background: rgba(16, 185, 129, 0.35);
+    border-radius: 9999px;
+    border: 2px solid rgba(255, 255, 255, 0.08);
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(217, 70, 239, 0.5);
+    background: rgba(16, 185, 129, 0.55);
   }
 
   /* Autofill override to prevent white/yellow backgrounds */

@@ -222,7 +222,7 @@ export function Ventas() {
             <label className="block text-sm font-medium text-[#94a3b8] mb-1">Cliente</label>
             <select
               required
-              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
               value={selectedCliente}
               onChange={(e) => setSelectedCliente(e.target.value)}
             >
@@ -239,7 +239,7 @@ export function Ventas() {
               <div className="flex-1">
                 <label className="block text-xs text-[#94a3b8] mb-1">Producto</label>
                 <select
-                  className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
                   value={selectedProductToAdd}
                   onChange={(e) => setSelectedProductToAdd(e.target.value)}
                 >
@@ -254,7 +254,7 @@ export function Ventas() {
                 <input
                   type="number"
                   min="1"
-                  className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
                   value={cantidadToAdd}
                   onChange={(e) => setCantidadToAdd(parseInt(e.target.value) || 1)}
                 />

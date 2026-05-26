@@ -105,23 +105,23 @@ export function Inventario() {
         <button 
           onClick={() => setActiveTab('stock')}
           className={`pb-4 px-2 text-sm font-bold transition-all relative ${
-            activeTab === 'stock' ? 'text-[#d946ef]' : 'text-[#94a3b8] hover:text-white'
+            activeTab === 'stock' ? 'text-[#10b981]' : 'text-[#94a3b8] hover:text-white'
           }`}
         >
           Estado de Stock
           {activeTab === 'stock' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#d946ef] shadow-[0_0_10px_rgba(217,70,239,0.5)]"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#10b981] shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
           )}
         </button>
         <button 
           onClick={() => setActiveTab('categorias')}
           className={`pb-4 px-2 text-sm font-bold transition-all relative ${
-            activeTab === 'categorias' ? 'text-[#d946ef]' : 'text-[#94a3b8] hover:text-white'
+            activeTab === 'categorias' ? 'text-[#10b981]' : 'text-[#94a3b8] hover:text-white'
           }`}
         >
           Gestión de Categorías
           {activeTab === 'categorias' && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#d946ef] shadow-[0_0_10px_rgba(217,70,239,0.5)]"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#10b981] shadow-[0_0_10px_rgba(16,185,129,0.5)]"></div>
           )}
         </button>
       </div>
@@ -230,7 +230,7 @@ export function Inventario() {
                 <input
                   type="text"
                   required
-                  className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+                  className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
                   value={newCategoria}
                   onChange={(e) => setNewCategoria(e.target.value)}
                   placeholder="Ej: Periféricos"
@@ -275,7 +275,7 @@ export function Inventario() {
             <label className="block text-sm font-medium text-[#94a3b8] mb-1">Producto</label>
             <select
               required
-              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
               value={selectedProductId}
               onChange={(e) => setSelectedProductId(e.target.value)}
             >
@@ -293,7 +293,7 @@ export function Inventario() {
             <input
               type="number"
               required
-              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
               value={ajusteCantidad}
               onChange={(e) => setAjusteCantidad(parseInt(e.target.value) || 0)}
             />
@@ -301,7 +301,7 @@ export function Inventario() {
           {selectedProductId && (
             <div className="bg-white/5 p-4 rounded-xl border border-white/10">
               <p className="text-sm font-medium text-white">
-                Stock Resultante: <span className="text-[#d946ef] font-bold">
+                Stock Resultante: <span className="text-[#10b981] font-bold">
                   {(productos.find(p => p.id === selectedProductId)?.stock || 0) + ajusteCantidad}
                 </span>
               </p>

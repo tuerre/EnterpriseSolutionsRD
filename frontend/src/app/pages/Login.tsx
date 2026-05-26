@@ -33,16 +33,16 @@ export function Login() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-[#0a0118] relative overflow-hidden">
       {/* Gradientes de fondo animados */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-[#d946ef]/20 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-[#7c3aed]/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#8b5cf6]/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-[#10b981]/20 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-[#34d399]/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#6ee7b7]/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo y título */}
         <div className="text-center mb-10 animate-[fadeIn_0.6s_ease-in-out]">
-          <div className="inline-flex items-center justify-center w-20 h-20 glass rounded-3xl shadow-[0_0_40px_rgba(217,70,239,0.4)] mb-6 border-2 border-white/20">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#d946ef] to-[#7c3aed] rounded-2xl flex items-center justify-center animate-pulse">
+          <div className="inline-flex items-center justify-center w-20 h-20 glass rounded-3xl shadow-[0_0_40px_rgba(16,185,129,0.4)] mb-6 border-2 border-white/20">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#10b981] to-[#34d399] rounded-2xl flex items-center justify-center animate-pulse">
               <Sparkles className="w-10 h-10 text-white" />
             </div>
           </div>
@@ -62,14 +62,14 @@ export function Login() {
                   Correo Electrónico
                 </label>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8] group-focus-within:text-[#d946ef] transition-colors duration-300" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8] group-focus-within:text-[#10b981] transition-colors duration-300" />
                   <input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="usuario@empresa.com"
-                    className="w-full pl-12 pr-4 py-3.5 glass rounded-2xl text-white placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent transition-all duration-300"
+                    className="w-full pl-12 pr-4 py-3.5 glass rounded-2xl text-white placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent transition-all duration-300"
                     required
                   />
                 </div>
@@ -81,14 +81,14 @@ export function Login() {
                   Contraseña
                 </label>
                 <div className="relative group">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8] group-focus-within:text-[#d946ef] transition-colors duration-300" />
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#94a3b8] group-focus-within:text-[#10b981] transition-colors duration-300" />
                   <input
                     id="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full pl-12 pr-4 py-3.5 glass rounded-2xl text-white placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent transition-all duration-300"
+                    className="w-full pl-12 pr-4 py-3.5 glass rounded-2xl text-white placeholder:text-[#94a3b8] focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent transition-all duration-300"
                     required
                   />
                 </div>
@@ -120,18 +120,18 @@ export function Login() {
 
           {/* Demo credentials */}
           <div className="px-8 pb-8">
-            <div className="glass rounded-2xl p-5 border border-[#7c3aed]/30 bg-[#7c3aed]/5">
+            <div className="glass rounded-2xl p-5 border border-[#10b981]/30 bg-[#10b981]/5">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#d946ef] to-[#7c3aed] flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#10b981] to-[#34d399] flex items-center justify-center flex-shrink-0">
                   <Shield className="w-4 h-4 text-white" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-bold text-white mb-2">Acceso de Prueba</p>
                   <p className="text-xs text-[#94a3b8] font-medium mb-1">
-                    <span className="text-[#d946ef]">Email:</span> cualquier@email.com
+                    <span className="text-[#10b981]">Email:</span> cualquier@email.com
                   </p>
                   <p className="text-xs text-[#94a3b8] font-medium">
-                    <span className="text-[#d946ef]">Contraseña:</span> cualquier texto
+                    <span className="text-[#10b981]">Contraseña:</span> cualquier texto
                   </p>
                 </div>
               </div>

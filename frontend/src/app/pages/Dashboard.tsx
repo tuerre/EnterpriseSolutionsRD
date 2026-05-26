@@ -28,8 +28,8 @@ export function Dashboard() {
       change: `Total: ${clientes.length}`,
       trend: 'up',
       icon: Users,
-      color: 'from-[#d946ef] to-[#7c3aed]',
-      shadowColor: 'rgba(217, 70, 239, 0.3)'
+      color: 'from-[#10b981] to-[#34d399]',
+      shadowColor: 'rgba(16, 185, 129, 0.3)'
     },
     {
       title: 'Productos en Stock',
@@ -37,8 +37,8 @@ export function Dashboard() {
       change: `Total: ${productos.length}`,
       trend: 'up',
       icon: Package,
-      color: 'from-[#8b5cf6] to-[#7c3aed]',
-      shadowColor: 'rgba(139, 92, 246, 0.3)'
+      color: 'from-[#34d399] to-[#6ee7b7]',
+      shadowColor: 'rgba(52, 211, 153, 0.3)'
     },
     {
       title: 'Ventas Históricas',
@@ -101,7 +101,7 @@ export function Dashboard() {
           title="Alertas de Inventario"
           description="Productos con stock bajo"
           action={
-            <button onClick={() => navigate('/inventario')} className="text-sm text-[#d946ef] hover:text-[#7c3aed] font-bold transition-colors duration-300">
+            <button onClick={() => navigate('/inventario')} className="text-sm text-[#10b981] hover:text-[#34d399] font-bold transition-colors duration-300">
               Ver todo →
             </button>
           }
@@ -135,7 +135,7 @@ export function Dashboard() {
           title="Ventas Recientes"
           description="Últimas transacciones realizadas"
           action={
-            <button onClick={() => navigate('/ventas')} className="text-sm text-[#d946ef] hover:text-[#7c3aed] font-bold transition-colors duration-300">
+            <button onClick={() => navigate('/ventas')} className="text-sm text-[#10b981] hover:text-[#34d399] font-bold transition-colors duration-300">
               Ver todas →
             </button>
           }

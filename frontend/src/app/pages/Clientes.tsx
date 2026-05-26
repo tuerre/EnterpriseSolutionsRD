@@ -117,7 +117,7 @@ export function Clientes() {
                 <tr key={cliente.id} className="border-b border-white/5 hover:bg-white/5 transition-all duration-300">
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="notranslate w-10 h-10 rounded-xl bg-gradient-to-br from-[#d946ef] to-[#7c3aed] flex items-center justify-center text-white font-bold shadow-[0_0_15px_rgba(217,70,239,0.3)]">
+                      <div className="notranslate w-10 h-10 rounded-xl bg-gradient-to-br from-[#10b981] to-[#34d399] flex items-center justify-center text-white font-bold shadow-[0_0_15px_rgba(16,185,129,0.3)]">
                         {cliente.nombre.charAt(0).toUpperCase()}
                       </div>
                       <p className="text-sm font-bold text-white">{cliente.nombre}</p>
@@ -180,7 +180,7 @@ export function Clientes() {
             <input
               type="text"
               required
-              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
               value={formData.nombre}
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
             />
@@ -190,7 +190,7 @@ export function Clientes() {
             <input
               type="email"
               required
-              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
@@ -200,7 +200,7 @@ export function Clientes() {
             <input
               type="tel"
               required
-              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
               value={formData.telefono}
               onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
             />
@@ -210,7 +210,7 @@ export function Clientes() {
             <input
               type="text"
               required
-              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
               value={formData.direccion}
               onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
             />
@@ -218,7 +218,7 @@ export function Clientes() {
           <div>
             <label className="block text-sm font-medium text-[#94a3b8] mb-1">Estado</label>
             <select
-              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#d946ef] focus:border-transparent"
+              className="w-full px-3 py-2 border border-white/10 bg-white/5 text-white placeholder:text-[#94a3b8] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#10b981] focus:border-transparent"
               value={formData.estado}
               onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
             >
