@@ -43,7 +43,6 @@ export default function SuppliersPage() {
       <Table
         columns={[
           { key: 'company_name', label: 'Empresa' },
-          { key: 'tax_id', label: 'RNC/Tax ID' },
           { key: 'contact_name', label: 'Contacto' },
           { key: 'phone', label: 'Teléfono' },
           { key: 'email', label: 'Email' },

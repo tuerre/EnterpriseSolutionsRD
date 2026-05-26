@@ -131,7 +131,6 @@ model sales {
 model suppliers {
   supplier_id  Int         @id @default(autoincrement())
   company_name String      @db.VarChar(150)
-  tax_id       String?     @unique @db.VarChar(20)
   contact_name String?     @db.VarChar(100)
   phone        String?     @db.VarChar(20)
   email        String?     @db.VarChar(150)

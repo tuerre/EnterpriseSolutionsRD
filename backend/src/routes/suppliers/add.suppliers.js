@@ -14,7 +14,7 @@ function isValidEmail(email) {
 // ============ ADD A NEW SUPPLIER ============
 const addSupplier = async (req, res) => {
 	try {
-		const { company_name, tax_id, contact_name, phone, email, address } = req.body;
+		const { company_name, contact_name, phone, email, address } = req.body;
 		const user_id = Number(req.user?.user_id);
 
 		// Validate authenticated user
@@ -50,27 +50,6 @@ const addSupplier = async (req, res) => {
 
 		if (company_name.trim().length > 150) {
 			return res.status(400).json({ error: 'Company name cannot exceed 150 characters' });
-		}
-
-		// Validate tax ID (required, unique)
-		if (!tax_id || typeof tax_id !== 'string' || tax_id.trim() === '') {
-			return res.status(400).json({ error: 'Tax ID is required' });
-		}
-
-		if (tax_id.trim().length > 20) {
-			return res.status(400).json({ error: 'Tax ID cannot exceed 20 characters' });
-		}
-
-		// Check if tax ID is already registered
-		const existingTaxId = await prisma.suppliers.findUnique({
-			where: { tax_id: tax_id.trim() },
-			select: { supplier_id: true }
-		});
-
-		if (existingTaxId) {
-			return res.status(409).json({
-				error: 'Tax ID is already registered'
-			});
 		}
 
 		// Validate contact name (optional)
@@ -114,7 +93,6 @@ const addSupplier = async (req, res) => {
 		const supplierCreated = await prisma.suppliers.create({
 			data: {
 				company_name: company_name.trim(),
-				tax_id: tax_id.trim(),
 				contact_name: contact_name ? contact_name.trim() : null,
 				phone: phone ? phone.trim() : null,
 				email: email ? email.trim() : null,

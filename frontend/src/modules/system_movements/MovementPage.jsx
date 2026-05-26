@@ -15,7 +15,7 @@ export default function MovementPage() {
     <div style={{ display: 'grid', gap: 24 }}>
       <div>
         <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 34, fontWeight: 300 }}>Movimientos del Sistema</h1>
-        <p style={{ color: 'var(--text2)' }}>Historial de movimientos de inventario.</p>
+        <p style={{ color: 'var(--text2)' }}>Historial completo de movimientos registrados en la plataforma.</p>
       </div>
 
       <SearchBar value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Buscar módulo, usuario o acción" />
@@ -32,7 +32,7 @@ export default function MovementPage() {
         ]}
         data={filtered}
         isLoading={moduleHook.query.isLoading}
-        emptyMessage="No hay movimientos de inventario"
+        emptyMessage="No hay movimientos del sistema"
       />
 
       <Pagination page={1} totalPages={1} onPageChange={() => undefined} />

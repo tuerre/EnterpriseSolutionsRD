@@ -15,7 +15,7 @@ function isValidEmail(email) {
 const editSupplier = async (req, res) => {
 	try {
 		const { supplier_id } = req.params;
-		const { company_name, tax_id, contact_name, phone, email, address } = req.body;
+		const { company_name, contact_name, phone, email, address } = req.body;
 		const user_id = Number(req.user?.user_id);
 
 		// Validate authenticated user
@@ -85,31 +85,6 @@ const editSupplier = async (req, res) => {
 			}
 
 			dataUpdate.company_name = company_name.trim();
-		}
-
-		// Validate tax ID
-		if (tax_id !== undefined && tax_id !== null) {
-			if (typeof tax_id !== 'string' || tax_id.trim() === '') {
-				return res.status(400).json({ error: 'Tax ID must be valid text' });
-			}
-
-			if (tax_id.trim().length > 20) {
-				return res.status(400).json({ error: 'Tax ID cannot exceed 20 characters' });
-			}
-
-			// Check if new tax ID is already registered (and it's different from current)
-			const existingTaxId = await prisma.suppliers.findUnique({
-				where: { tax_id: tax_id.trim() },
-				select: { supplier_id: true, tax_id: true }
-			});
-
-			if (existingTaxId && existingTaxId.supplier_id !== Number(supplier_id)) {
-				return res.status(409).json({
-					error: 'Tax ID is already registered'
-				});
-			}
-
-			dataUpdate.tax_id = tax_id.trim();
 		}
 
 		// Validate contact name
