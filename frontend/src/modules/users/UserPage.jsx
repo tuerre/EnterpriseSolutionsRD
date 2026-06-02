@@ -145,7 +145,6 @@ export default function UserPage() {
             { key: 'role_name', label: 'Rol' },
             { key: 'description', label: 'Descripción' },
             { key: 'users_count', label: 'Usuarios', render: (row) => row.users_count ?? 0 },
-            { key: 'permissions_count', label: 'Permisos', render: (row) => row.permissions_count ?? 0 },
             { key: 'status', label: 'Estado', render: (row) => <Badge active={row.is_active !== false} /> },
             ...(hasPermission('users', 'can_update') ? [{ key: 'edit', label: 'Editar', render: (row) => <Button variant="ghost" size="sm" onClick={() => { setSelectedRole(row); setIsRoleFormOpen(true); }}><Edit2 size={16} /></Button> }] : []),
             ...(hasPermission('users', 'can_update') ? [{ key: 'toggle', label: 'Acción', render: (row) => row.is_active === false ? <Button variant="secondary" size="sm" onClick={async () => roleHook.update.mutateAsync({ id: row.role_id, data: { is_active: true } })}><RotateCcw size={16} /> Activar</Button> : <Button variant="danger" size="sm" onClick={async () => roleHook.update.mutateAsync({ id: row.role_id, data: { is_active: false } })}><ShieldOff size={16} /> Desactivar</Button> }] : [])

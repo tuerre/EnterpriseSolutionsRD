@@ -34,6 +34,7 @@ const manageRolesPermissions = require('./routes/users/roles.permissions.js');
 const { authenticateToken } = require('./middleware/middleware.js');
 const lowStockRoute = require('./routes/products/low.stock.products');
 const inventoryHistoryRoute = require('./routes/products/inventory.history');
+const systemMovementsRoute = require('./routes/system_movements/list.system.movements');
 const listEmployees = require('./routes/employees/list.employees.js');
 const addEmployee = require('./routes/employees/add.employee.js');
 const editEmployee = require('./routes/employees/edit.employee.js');
@@ -55,14 +56,14 @@ app.use(cookieParser());
 // CORS
 const cors = require('cors');
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
     credentials: true
 }));
 
 // WebSocket
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
         credentials: true
     }
 });
@@ -113,6 +114,7 @@ app.use('/api/tax-types', authenticateToken, listTaxType);
 app.use('/products/stock', updateStockRoute);
 app.use('/products/low-stock', lowStockRoute);
 app.use('/products/history', inventoryHistoryRoute);
+app.use('/api/system-movements', authenticateToken, systemMovementsRoute);
 
 // Error global
 app.use((err, req, res, next) => {

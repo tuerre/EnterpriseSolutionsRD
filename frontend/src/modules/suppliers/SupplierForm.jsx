@@ -7,7 +7,6 @@ import Input from '../../components/ui/Input';
 
 const schema = z.object({
   company_name: z.string().min(1, 'La empresa es obligatoria'),
-  tax_id: z.string().min(1, 'El tax ID es obligatorio'),
   contact_name: z.string().optional().or(z.literal('')),
   phone: z.string().optional().or(z.literal('')),
   email: z.string().email('Correo inválido').optional().or(z.literal('')),
@@ -19,7 +18,6 @@ export default function SupplierForm({ initialValues, onSubmit, loading, onCance
     resolver: zodResolver(schema),
     defaultValues: {
       company_name: initialValues?.company_name || '',
-      tax_id: initialValues?.tax_id || '',
       contact_name: initialValues?.contact_name || '',
       phone: initialValues?.phone || '',
       email: initialValues?.email || '',
@@ -30,7 +28,6 @@ export default function SupplierForm({ initialValues, onSubmit, loading, onCance
   useEffect(() => {
     reset({
       company_name: initialValues?.company_name || '',
-      tax_id: initialValues?.tax_id || '',
       contact_name: initialValues?.contact_name || '',
       phone: initialValues?.phone || '',
       email: initialValues?.email || '',
@@ -42,7 +39,6 @@ export default function SupplierForm({ initialValues, onSubmit, loading, onCance
   return (
     <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'grid', gap: 16 }}>
       <Input label="Empresa *" register={register} name="company_name" error={errors.company_name?.message} />
-      <Input label="Tax ID *" register={register} name="tax_id" error={errors.tax_id?.message} />
       <Input label="Contacto" register={register} name="contact_name" error={errors.contact_name?.message} />
       <Input label="Teléfono" register={register} name="phone" error={errors.phone?.message} />
       <Input label="Email" register={register} name="email" error={errors.email?.message} />

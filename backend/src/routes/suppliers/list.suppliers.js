@@ -42,7 +42,7 @@ const listSuppliers = async (req, res) => {
 		const skip = (pageNum - 1) * limitNum;
 
 		// Validate sorting
-		const validFields = ['supplier_id', 'company_name', 'tax_id', 'contact_name', 'email', 'phone'];
+		const validFields = ['supplier_id', 'company_name', 'contact_name', 'email', 'phone'];
 		const sortByFinal = validFields.includes(sortBy) ? sortBy : 'company_name';
 		const sortOrderFinal = sortOrder.toLowerCase() === 'desc' ? 'desc' : 'asc';
 
@@ -54,8 +54,7 @@ const listSuppliers = async (req, res) => {
 			where.OR = [
 				{ company_name: { contains: search.trim(), mode: 'insensitive' } },
 				{ contact_name: { contains: search.trim(), mode: 'insensitive' } },
-				{ email: { contains: search.trim(), mode: 'insensitive' } },
-				{ tax_id: { contains: search.trim(), mode: 'insensitive' } }
+				{ email: { contains: search.trim(), mode: 'insensitive' } }
 			];
 		}
 
@@ -73,7 +72,6 @@ const listSuppliers = async (req, res) => {
 				select: {
 					supplier_id: true,
 					company_name: true,
-					tax_id: true,
 					contact_name: true,
 					phone: true,
 					email: true,

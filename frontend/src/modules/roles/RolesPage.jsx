@@ -41,7 +41,6 @@ export default function RolesPage() {
       <Table
         columns={[
           { key: 'role_id', label: 'ID' },
-          { key: 'role_name', label: 'Nombre del Rol' },
           { key: 'description', label: 'Descripción' },
           { key: 'status', label: 'Estado', render: (row) => <Badge active={row.is_active !== false} /> },
           ...(hasPermission('roles', 'can_update') ? [{ key: 'edit', label: 'Editar', render: (row) => <Button variant="ghost" size="sm" onClick={() => { setSelectedItem(row); setIsFormOpen(true); }}><Edit2 size={16} /></Button> }] : [])
@@ -52,7 +51,13 @@ export default function RolesPage() {
       />
 
       <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={selectedItem ? 'Editar rol' : 'Nuevo rol'}>
-        <RoleForm initialValues={selectedItem} loading={moduleHook.create.isPending || moduleHook.update.isPending} onSubmit={onSubmit} onCancel={() => setIsFormOpen(false)} />
+        <RoleForm
+          initialValues={selectedItem}
+          loading={moduleHook.create.isPending || moduleHook.update.isPending}
+          onSubmit={onSubmit}
+          onCancel={() => setIsFormOpen(false)}
+          showStatusField={Boolean(selectedItem)}
+        />
       </Modal>
     </div>
   );

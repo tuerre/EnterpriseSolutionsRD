@@ -14,10 +14,22 @@ export default function SaleForm({ onCreated }) {
   const [paymentMethod, setPaymentMethod] = useState('Efectivo');
   const [items, setItems] = useState([{ product_id: '', quantity: 1 }]);
 
-  const total = useMemo(() => items.reduce((sum, item) => {
+  const summary = useMemo(() => items.reduce((accumulator, item) => {
     const product = products.find((entry) => String(entry.product_id) === String(item.product_id));
-    return sum + (Number(item.quantity) || 0) * (Number(product?.sale_price) || 0);
-  }, 0), [items, products]);
+    const quantity = Number(item.quantity) || 0;
+    const salePrice = Number(product?.sale_price) || 0;
+    const taxRate = Number(product?.tax_types?.percentage) || 0;
+    const lineSubtotal = quantity * salePrice;
+    const lineTax = lineSubtotal * (taxRate / 100);
+
+    return {
+      subtotal: accumulator.subtotal + lineSubtotal,
+      taxes: accumulator.taxes + lineTax,
+      total: accumulator.total + lineSubtotal + lineTax
+    };
+  }, { subtotal: 0, taxes: 0, total: 0 }), [items, products]);
+
+  const currencyFormatter = useMemo(() => new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }), []);
 
   const updateItem = (index, key, value) => {
     setItems((current) => current.map((item, itemIndex) => (itemIndex === index ? { ...item, [key]: value } : item)));
@@ -50,25 +62,44 @@ export default function SaleForm({ onCreated }) {
         </select>
       </div>
 
-      {items.map((item, index) => (
-        <div key={index} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr auto', gap: 12, alignItems: 'end' }}>
-          <label style={{ display: 'grid', gap: 6 }}>
-            <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Producto</span>
-            <select value={item.product_id} onChange={(event) => updateItem(index, 'product_id', event.target.value)} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text)', padding: 12 }}>
-              <option value="">Selecciona</option>
-              {products.map((product) => <option key={product.product_id} value={product.product_id}>{product.product_name}</option>)}
-            </select>
-          </label>
-          <Input label="Cantidad" type="number" min="1" value={item.quantity} onChange={(event) => updateItem(index, 'quantity', event.target.value)} />
-          <Button type="button" variant="ghost" onClick={() => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))}>Eliminar</Button>
-        </div>
-      ))}
+      <div style={{ display: 'grid', gap: 12, maxHeight: 360, overflowY: 'auto', paddingRight: 8 }}>
+        {items.map((item, index) => (
+          <div key={index} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr auto', gap: 12, alignItems: 'end' }}>
+            <label style={{ display: 'grid', gap: 6 }}>
+              <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Producto</span>
+              <select value={item.product_id} onChange={(event) => updateItem(index, 'product_id', event.target.value)} style={{ width: '100%', background: 'transparent', border: '1px solid var(--border)', borderRadius: 3, color: 'var(--text)', padding: 12 }}>
+                <option value="">Selecciona</option>
+                {products.map((product) => <option key={product.product_id} value={product.product_id}>{product.product_name}</option>)}
+              </select>
+            </label>
+            <Input label="Cantidad" type="number" min="1" value={item.quantity} onChange={(event) => updateItem(index, 'quantity', event.target.value)} />
+            <Button type="button" variant="ghost" onClick={() => setItems((current) => current.filter((_, itemIndex) => itemIndex !== index))}>Eliminar</Button>
+          </div>
+        ))}
+      </div>
 
       <Button type="button" variant="secondary" onClick={() => setItems((current) => [...current, { product_id: '', quantity: 1 }])}>Agregar producto</Button>
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 28, fontWeight: 300 }}>Total estimado: {new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(total)}</div>
-        <Button type="submit">Registrar venta</Button>
+      <div style={{ display: 'grid', gap: 12, padding: 16, border: '1px solid var(--border)', borderRadius: 8, background: 'rgba(255,255,255,0.02)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 12 }}>
+          <div style={{ display: 'grid', gap: 6 }}>
+            <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Subtotal estimado</span>
+            <strong style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 24, fontWeight: 300 }}>{currencyFormatter.format(summary.subtotal)}</strong>
+          </div>
+          <div style={{ display: 'grid', gap: 6 }}>
+            <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Impuestos estimados</span>
+            <strong style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 24, fontWeight: 300 }}>{currencyFormatter.format(summary.taxes)}</strong>
+          </div>
+          <div style={{ display: 'grid', gap: 6 }}>
+            <span style={{ fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text2)' }}>Total estimado</span>
+            <strong style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 24, fontWeight: 300 }}>{currencyFormatter.format(summary.total)}</strong>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <div style={{ color: 'var(--text2)', fontSize: 12 }}>Los impuestos estimados se calculan según el porcentaje asociado a cada producto.</div>
+          <Button type="submit">Registrar venta</Button>
+        </div>
       </div>
 
       <div style={{ color: 'var(--text2)', fontSize: 12 }}>Usuario actual: {user?.username}</div>
